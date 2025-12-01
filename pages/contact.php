@@ -1,3 +1,44 @@
+<?php
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $name = trim($_POST["name"] ?? "");
+    $email = trim($_POST["email"] ?? "");
+    $message = trim($_POST["message"] ?? "");
+
+    if ($name && $email && $message) {
+
+        // Use your Aston hosting credentials
+        $db_host = "localhost";
+        $db_user = "cs2team8";
+        $db_pass = "F3lCvksLmJqDqmsyllNrjsF8R";
+        $db_name = "cs2team8_db";
+
+        $conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
+
+        if ($conn->connect_error) {
+            $response = "Database connection failed: " . $conn->connect_error;
+        } else {
+            $stmt = $conn->prepare(
+                "INSERT INTO contact_messages (name, email, message) VALUES (?, ?, ?)"
+            );
+            $stmt->bind_param("sss", $name, $email, $message);
+
+            if ($stmt->execute()) {
+                $response = "Message successfully sent! 🎉";
+            } else {
+                $response = "Database error: " . $stmt->error;
+            }
+
+            $stmt->close();
+            $conn->close();
+        }
+
+    } else {
+        $response = "All fields are required.";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -13,7 +54,6 @@
       rel="stylesheet"
     />
 
-    <!-- Baseplate styles (unchanged) -->
     <style>
       :root {
         color-scheme: dark;
@@ -79,7 +119,6 @@
 
       nav a:hover { color: #fff; }
 
-      /* CONTACT PAGE SECTION → perfectly matching your style */
       .contact-section {
         padding: 6rem 0 4rem;
       }
@@ -169,7 +208,7 @@
           <a href="login.html">Login</a>
           <a href="register.html">Register</a>
           <a href="cart.html">Cart</a>
-          <a href="contact.html" style="color:#fff;">Contact</a>
+          <a href="contact.php" style="color:#fff;">Contact</a>
         </nav>
       </div>
     </header>
@@ -182,7 +221,14 @@
           <h2>Get in Touch</h2>
           <p>Have a question, issue, or want to reach the team? Send us a message.</p>
 
-          <form action="../php/contact_handler.php" method="POST">
+          <!-- RESPONSE MESSAGE -->
+          <?php if (!empty($response)): ?>
+            <div style="color:#d6b372; text-align:center; margin-bottom:1rem;">
+              <?= htmlspecialchars($response) ?>
+            </div>
+          <?php endif; ?>
+
+          <form action="contact.php" method="POST">
             <input type="text" name="name" placeholder="Your Name" required />
             <input type="email" name="email" placeholder="Your Email" required />
             <textarea name="message" placeholder="Your Message" required></textarea>
