@@ -1,9 +1,10 @@
 <?php
-try {
-    $pdo = new PDO("mysql:host=localhost;dbname=cs2team8_DATA;charset=utf8mb4", "root", "");
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+session_start();
 
-    //FETCH ITEM ID FROM URL!! (Redirect from shop page)
+require_once 'db_config.php';
+
+try {
+    // FETCH ITEM ID FROM URL!! (Redirect from shop page)
     $id = $_GET['id'] ?? 1;
 
     
@@ -90,8 +91,8 @@ try {
       header {
         position: sticky;
         top: 0;
-        z-index: 10;
-        background: rgba(0, 0, 0, 0.75);
+        z-index: 100; 
+        background: rgba(0, 0, 0, 0.85); 
         backdrop-filter: blur(12px);
         border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         padding: 1.25rem 0;
@@ -104,27 +105,120 @@ try {
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.2em;
+        color: #fff;
       }
 
       .brand-logo {
-        width: 86px;
-        height: 86px;
+        width: 60px; 
+        height: 60px;
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.06);
-        padding: 0.55rem;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        padding: 0.35rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
       }
 
       nav {
         margin-left: auto;
         display: flex;
-        gap: 1.5rem;
+        align-items: center;
+        gap: 2rem;
         font-size: 0.95rem;
         color: var(--muted);
       }
 
-      nav a:hover {
-        color: #fff;
+      nav > a, .dropbtn {
+        transition: color 0.2s ease;
+        cursor: pointer;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+      }
+
+      nav > a:hover, .dropdown:hover .dropbtn {
+        color: var(--accent);
+      }
+
+      .dropdown {
+        position: relative;
+        display: inline-block;
+      }
+
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: var(--graphite);
+        min-width: 220px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        z-index: 1;
+        top: 100%; 
+        padding: 0.5rem 0;
+        margin-top: 10px;
+      }
+      
+      .dropdown-content::before {
+        content: "";
+        position: absolute;
+        top: -20px; 
+        left: 0;
+        width: 100%;
+        height: 20px;
+      }
+
+      .dropdown-content a {
+        color: var(--muted);
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        font-size: 0.85rem;
+        transition: background 0.2s;
+      }
+
+      .dropdown-content a:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--accent);
+      }
+
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
+
+      
+      .nav-btn {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1.2rem;
+        border-radius: 99px;
+        font-size: 0.85rem;
+      }
+      
+      .nav-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      
+      
+      .purchase-actions {
+        display: flex;
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+
+      
+      .purchase-actions button {
+        background: transparent;
+        color: inherit;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1.2rem;
+        border-radius: 99px;
+        font-size: 0.85rem;
+        font-family: inherit;
+        cursor: pointer;
+        transition: color 0.2s ease, border-color 0.2s ease;
+      }
+
+      .purchase-actions button:hover {
+        border-color: var(--accent);
+        color: var(--accent);
       }
 
       .hero {
@@ -291,8 +385,6 @@ try {
         margin-bottom: 25px;
       }
 
-      .image-container img
-
       @media (max-width: 720px) {
         header {
           position: static;
@@ -320,9 +412,38 @@ try {
         <header>
           <div class="page-shell" style="display: flex; align-items: center; gap: 2rem">
             <div class="brand">
-              <img src="images/Logo.png" alt="Drip or Drown logo" class="brand-logo" />
+              <img src="Logo.png" alt="Drip or Drown logo" class="brand-logo" />
               Drip or Drown
             </div>
+            
+            <nav>
+                <div class="dropdown">
+                    <a href="shop.html" class="dropbtn">Shop ▾</a>
+                    <div class="dropdown-content">
+                        <a href="shop.html#category-1">GOLD CHAINS</a>
+                        <a href="shop.html#category-2">RINGS</a>
+                        <a href="shop.html#category-3">ANKLETS</a>
+                        <a href="shop.html#category-4">BELLY BUTTON PIERCINGS</a>
+                        <a href="shop.html#category-5">EARRINGS</a>
+                        <a href="shop.html#category-6">BELLY CHAINS</a>
+                    </div>
+                </div>
+
+                <?php if (isset($_SESSION['user_id'])): ?>
+                  <span style="color: var(-accent); font-weight: 500;">
+                    Hi, <?= htmlspecialchars($_SESSION['first_name'] ?? 'User') ?>
+                  </span>
+                  <a href="logout.php" class="nav-btn">Logout</a>
+
+                <?php else: ?>
+                  <a href="login.html" class="nav-btn">Login</a>
+                  <a href="register.html" class="nav-btn">Register</a>
+                <?php endif; ?>
+
+                <a href="cart.html" class="nav-btn">Cart</a>
+
+            </nav>
+
           </div>
         </header>
 
@@ -353,7 +474,20 @@ try {
               </div>
 
               <div class="purchase-actions">
-                <button class="primary add-to-cart-btn">Add to Cart</button>
+                <form action="add_to_cart_function.php" method="POST" style="display:flex; gap:1rem; align-items:center;">
+                    
+                    <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
+                    
+                    <div style="display:flex; flex-direction:column;">
+                        <label style="font-size:0.7rem; color:var(--muted); margin-left:10px;">Qty</label>
+                        <input type="number" name="quantity" value="1" min="1" max="10" 
+                               style="width: 60px; padding: 0.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: white; text-align: center;">
+                    </div>
+
+                    <button type="submit" class="primary add-to-cart-btn">Add to Cart</button>
+                </form>
+
+
                 <button class="secondary buy-now-btn">Buy Now</button>
               </div>
 
