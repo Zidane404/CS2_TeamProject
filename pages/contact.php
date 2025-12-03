@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $db_host = "localhost";
         $db_user = "cs2team8";
         $db_pass = "F3lCvksLmJqDqmsyllNrjsF8R";
-        $db_name = "cs2team8_db";
+        $db_name = "cs2team8_";
 
         $conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
 
