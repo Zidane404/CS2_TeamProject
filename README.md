@@ -1,4 +1,4 @@
-🛒 CS2 Team Project
+CS2 Team Project - Drip or Drown 💎
 
 A web-based e-commerce application developed for the CS2 Module.
 
