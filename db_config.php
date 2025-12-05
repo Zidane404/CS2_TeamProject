@@ -13,7 +13,7 @@ if ($useLocal) {
     $db_host = 'localhost';
     $db_name = 'cs2team8_db04';
     $db_user = 'cs2team8';
-    $db_pass = 'F3lCvksLmJqDqmsyllNrjsF8R';
+    $db_pass = '';
 }
 
 $dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4";
