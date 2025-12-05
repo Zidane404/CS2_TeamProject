@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout | Drip or Drown</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --deep-black: #020203;
+        --onyx: #0b0b0d;
+        --graphite: #111216;
+        --accent: #d6b372;
+        --muted: #868995;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: radial-gradient(circle at top, #191a20 0%, var(--deep-black) 45%);
+        color: #f7f7f9;
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      .page-shell {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem 4rem;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        padding: 1.25rem 0;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+      }
+
+      .brand-logo {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+        padding: 0.45rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        font-size: 0.9rem;
+      }
+
+      nav a {
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      nav a:hover,
+      nav a.active {
+        color: var(--accent);
+      }
+
+      .nav-btn {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1.2rem;
+        border-radius: 99px;
+        font-size: 0.85rem;
+      }
+
+      .nav-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .checkout-container {
+        padding: 5rem 0 4rem;
+        display: grid;
+        grid-template-columns: minmax(0, 1.8fr) minmax(300px, 1fr);
+        gap: 3rem;
+        align-items: flex-start;
+      }
+
+      .checkout-form-section {
+        background: linear-gradient(145deg, var(--graphite), var(--deep-black));
+        border-radius: 24px;
+        padding: 2.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 28px 80px rgba(0, 0, 0, 0.65);
+      }
+
+      .checkout-form-section h2 {
+        margin-bottom: 2rem;
+        font-size: 1.8rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(5, 5, 8, 0.9);
+        color: #f7f7f9;
+        font-size: 0.95rem;
+        font-family: inherit;
+        transition: border-color 0.2s ease;
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px rgba(214, 179, 114, 0.2);
+      }
+
+      .form-group input.error {
+        border-color: #ff6b6b;
+      }
+
+      .error-message {
+        color: #ff6b6b;
+        font-size: 0.8rem;
+        margin-top: 0.4rem;
+        display: none;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .order-summary {
+        background: rgba(11, 11, 13, 0.8);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        position: sticky;
+        top: 120px;
+      }
+
+      .order-summary h3 {
+        margin-bottom: 1.5rem;
+        font-size: 1.4rem;
+      }
+
+      .summary-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .summary-item:last-child {
+        border-bottom: none;
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+        color: var(--muted);
+      }
+
+      .summary-row.total {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 2px solid rgba(255, 255, 255, 0.1);
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #f7f7f9;
+      }
+
+      .submit-btn {
+        width: 100%;
+        margin-top: 2rem;
+        border-radius: 999px;
+        padding: 1rem 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: #0a0a0a;
+        color: #f7f7f9;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: transform 0.2s ease, background 0.2s ease;
+      }
+
+      .submit-btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+        background: #151515;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      }
+
+      .submit-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      @media (max-width: 968px) {
+        .checkout-container {
+          grid-template-columns: 1fr;
+        }
+
+        .order-summary {
+          position: static;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="page-shell" style="display: flex; align-items: center; justify-content: space-between; gap: 2rem">
+        <div class="brand">
+          <a href="index.html" style="display:flex; align-items:center; gap:0.75rem; text-decoration:none; color:inherit;">
+            <img src="images/Logo-2.png" alt="Drip or Drown logo" class="brand-logo" />
+            Drip or Drown
+          </a>
+        </div>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="collection.html">Shop</a>
+          <a href="AboutUs.html">About</a>
+          <a href="contact.php">Contact</a>
+          <a href="cart.html" class="nav-btn">Cart</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-shell checkout-container">
+      <section class="checkout-form-section">
+        <h2>Checkout</h2>
+        
+        <form id="checkout-form">
+          <!-- Contact Information -->
+          <div class="form-group">
+            <label for="name">Full Name *</label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              required 
+              placeholder="John Smith"
+            />
+            <span class="error-message" id="name-error">Please enter your full name</span>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address *</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              required 
+              placeholder="john@example.com"
+            />
+            <span class="error-message" id="email-error">Please enter a valid email address</span>
+          </div>
+
+          <!-- Shipping Address -->
+          <div class="form-group">
+            <label for="address">Address *</label>
+            <input 
+              type="text" 
+              id="address" 
+              name="address" 
+              required 
+              placeholder="123 Main Street, London, SW1A 1AA"
+            />
+            <span class="error-message" id="address-error">Please enter your address</span>
+          </div>
+
+          <!-- Payment Information -->
+          <h3 style="margin: 2rem 0 1rem; font-size: 1.3rem;">Payment Details</h3>
+
+          <div class="form-group">
+            <label for="card-number">Card Number *</label>
+            <input 
+              type="text" 
+              id="card-number" 
+              name="card-number" 
+              required 
+              placeholder="1234 5678 9012 3456"
+              maxlength="19"
+            />
+            <span class="error-message" id="card-number-error">Please enter a valid 16-digit card number</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="expiry">Expiry Date *</label>
+              <input 
+                type="text" 
+                id="expiry" 
+                name="expiry" 
+                required 
+                placeholder="MM/YY"
+                maxlength="5"
+              />
+              <span class="error-message" id="expiry-error">Enter MM/YY format</span>
+            </div>
+
+            <div class="form-group">
+              <label for="cvv">CVV *</label>
+              <input 
+                type="text" 
+                id="cvv" 
+                name="cvv" 
+                required 
+                placeholder="123"
+                maxlength="3"
+              />
+              <span class="error-message" id="cvv-error">Enter 3-digit CVV</span>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submit-btn">
+            Complete Purchase
+          </button>
+        </form>
+      </section>
+
+      <aside class="order-summary">
+        <h3>Order Summary</h3>
+        <div id="order-items">
+          <!-- Items will be loaded here -->
+        </div>
+        
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="checkout-subtotal">£0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>VAT (20%)</span>
+          <span id="checkout-vat">£0.00</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span id="checkout-total">£0.00</span>
+        </div>
+      </aside>
+    </main>
+
+    <script>
+      // Load cart items for order summary
+      function loadOrderSummary() {
+        fetch('fetch_cart.php')
+          .then(res => res.json())
+          .then(data => {
+            if (!data || !Array.isArray(data.items)) return;
+
+            const orderItemsEl = document.getElementById('order-items');
+            orderItemsEl.innerHTML = '';
+            
+            let subtotal = 0;
+
+            data.items.forEach(item => {
+              const price = parseFloat(item.price) || 0;
+              const qty = parseInt(item.quantity, 10) || 1;
+              subtotal += price * qty;
+
+              const itemEl = document.createElement('div');
+              itemEl.className = 'summary-item';
+              itemEl.innerHTML = `
+                <div>
+                  <div style="font-weight: 500;">${item.name}</div>
+                  <div style="color: var(--muted); font-size: 0.85rem;">Qty: ${qty}</div>
+                </div>
+                <div>£${(price * qty).toFixed(2)}</div>
+              `;
+              orderItemsEl.appendChild(itemEl);
+            });
+
+            const vat = subtotal * 0.2;
+            const total = subtotal + vat;
+
+            document.getElementById('checkout-subtotal').textContent = '£' + subtotal.toFixed(2);
+            document.getElementById('checkout-vat').textContent = '£' + vat.toFixed(2);
+            document.getElementById('checkout-total').textContent = '£' + total.toFixed(2);
+          })
+          .catch(err => {
+            console.error('Error loading cart:', err);
+          });
+      }
+
+      // Format card number with spaces
+      document.getElementById('card-number').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, '');
+        let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+        e.target.value = formattedValue;
+      });
+
+      // Format expiry date with slash
+      document.getElementById('expiry').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+          value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        e.target.value = value;
+      });
+
+      // Only allow numbers in CVV
+      document.getElementById('cvv').addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+      });
+
+      // Form validation
+      function validateForm() {
+        let isValid = true;
+
+        // Name validation
+        const name = document.getElementById('name');
+        const nameError = document.getElementById('name-error');
+        if (name.value.trim().length < 2) {
+          name.classList.add('error');
+          nameError.style.display = 'block';
+          isValid = false;
+        } else {
+          name.classList.remove('error');
+          nameError.style.display = 'none';
+        }
+
+        // Email validation
+        const email = document.getElementById('email');
+        const emailError = document.getElementById('email-error');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email.value)) {
+          email.classList.add('error');
+          emailError.style.display = 'block';
+          isValid = false;
+        } else {
+          email.classList.remove('error');
+          emailError.style.display = 'none';
+        }
+
+        // Address validation
+        const address = document.getElementById('address');
+        const addressError = document.getElementById('address-error');
+        if (address.value.trim().length < 5) {
+          address.classList.add('error');
+          addressError.style.display = 'block';
+          isValid = false;
+        } else {
+          address.classList.remove('error');
+          addressError.style.display = 'none';
+        }
+
+        // Card number validation (16 digits)
+        const cardNumber = document.getElementById('card-number');
+        const cardError = document.getElementById('card-number-error');
+        const cardDigits = cardNumber.value.replace(/\s/g, '');
+        if (cardDigits.length !== 16 || !/^\d+$/.test(cardDigits)) {
+          cardNumber.classList.add('error');
+          cardError.style.display = 'block';
+          isValid = false;
+        } else {
+          cardNumber.classList.remove('error');
+          cardError.style.display = 'none';
+        }
+
+        // Expiry validation (MM/YY format)
+        const expiry = document.getElementById('expiry');
+        const expiryError = document.getElementById('expiry-error');
+        const expiryRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+        if (!expiryRegex.test(expiry.value)) {
+          expiry.classList.add('error');
+          expiryError.style.display = 'block';
+          isValid = false;
+        } else {
+          expiry.classList.remove('error');
+          expiryError.style.display = 'none';
+        }
+
+        // CVV validation (3 digits)
+        const cvv = document.getElementById('cvv');
+        const cvvError = document.getElementById('cvv-error');
+        if (cvv.value.length !== 3 || !/^\d{3}$/.test(cvv.value)) {
+          cvv.classList.add('error');
+          cvvError.style.display = 'block';
+          isValid = false;
+        } else {
+          cvv.classList.remove('error');
+          cvvError.style.display = 'none';
+        }
+
+        return isValid;
+      }
+
+      // Handle form submission
+      document.getElementById('checkout-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!validateForm()) {
+          return;
+        }
+        // Remove existing popup if any
+        var existing = document.getElementById('order-complete-popup');
+        if (existing) existing.remove();
+        var popup = document.createElement('div');
+        popup.id = 'order-complete-popup';
+        popup.style.cssText = `
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: #0a0a0a;
+          border: 1px solid rgba(255,255,255,0.2);
+          border-radius: 12px;
+          padding: 2rem;
+          z-index: 10000;
+          max-width: 500px;
+          color: #f7f7f9;
+          font-size: 1.1rem;
+          text-align: center;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.8);
+        `;
+        popup.innerHTML = `<p style='margin-bottom:1.2rem;'>Your order has been complete.</p><button style='background: #1a1a1a; color:#f7f7f9; border:1px solid rgba(255,255,255,0.2); border-radius:8px; padding:0.75rem 2rem; cursor:pointer; font-weight:600; width:100%;'>OK</button>`;
+        var overlay = document.createElement('div');
+        overlay.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);z-index:9999;`;
+        overlay.onclick = function() { popup.remove(); overlay.remove(); window.location.href = 'index.html'; };
+        popup.querySelector('button').onclick = function() {
+          popup.remove(); overlay.remove(); window.location.href = 'index.html';
+        };
+        document.body.appendChild(overlay);
+        document.body.appendChild(popup);
+        // Optionally clear the form fields:
+        document.getElementById('checkout-form').reset();
+      });
+
+      // Load order summary on page load
+      loadOrderSummary();
+    </script>
+  </body>
+</html>

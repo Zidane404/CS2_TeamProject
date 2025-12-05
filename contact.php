@@ -1,44 +1,47 @@
 <?php
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-    $name = trim($_POST["name"] ?? "");
-    $email = trim($_POST["email"] ?? "");
-    $message = trim($_POST["message"] ?? "");
+$emailStatus = "";
 
-    if ($name && $email && $message) {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+    $to_email = "dripordrowninfo2025@gmail.com"; 
+    $subject_prefix = "[Drip or Drown Contact] "; 
 
-        // Use your Aston hosting credentials
-        $db_host = "localhost";
-        $db_user = "cs2team8";
-        $db_pass = "F3lCvksLmJqDqmsyllNrjsF8R";
-        $db_name = "cs2team8_";
 
-        $conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
+    $name = strip_tags(trim($_POST["name"]));
+    $email = filter_var(trim($_POST["email"]), FILTER_SANITIZE_EMAIL);
+    $message = htmlspecialchars(trim($_POST["message"]));
 
-        if ($conn->connect_error) {
-            $response = "Database connection failed: " . $conn->connect_error;
+    if (!empty($name) && !empty($message) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        
+        $email_subject = $subject_prefix . "New message from $name";
+        
+        $email_content = "You have received a new message from your website contact form.\n\n";
+        $email_content .= "Name: $name\n";
+        $email_content .= "Email: $email\n\n";
+        $email_content .= "Message:\n$message\n";
+
+        $headers = "From: Website Contact Form <noreply@" . $_SERVER['SERVER_NAME'] . ">\r\n";
+        $headers .= "Reply-To: $email\r\n";
+        $headers .= "X-Mailer: PHP/" . phpversion();
+
+        if (mail($to_email, $email_subject, $email_content, $headers)) {
+            $emailStatus = "success";
         } else {
-            $stmt = $conn->prepare(
-                "INSERT INTO contact_messages (name, email, message) VALUES (?, ?, ?)"
-            );
-            $stmt->bind_param("sss", $name, $email, $message);
-
-            if ($stmt->execute()) {
-                $response = "Message successfully sent! 🎉";
-            } else {
-                $response = "Database error: " . $stmt->error;
-            }
-
-            $stmt->close();
-            $conn->close();
+            $emailStatus = "error";
+            echo "<div style='background:red; color:white; padding:10px; text-align:center;'>Server Error: The mail() function failed.</div>";
         }
-
     } else {
-        $response = "All fields are required.";
+        $emailStatus = "validation_error";
+        if(empty($name)) echo "";
+        if(empty($message)) echo "";
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL)) echo "";
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -46,7 +49,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Contact • Drip or Drown</title>
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -110,14 +112,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       }
 
       nav {
-        margin-left: auto;
         display: flex;
+        align-items: center;
         gap: 1.5rem;
-        font-size: 0.95rem;
-        color: var(--muted);
+        font-size: 0.9rem;
       }
 
-      nav a:hover { color: #fff; }
+      nav a {
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      nav a:hover,
+      nav a.active {
+        color: var(--accent);
+      }
 
       .contact-section {
         padding: 6rem 0 4rem;
@@ -172,19 +185,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       textarea { height: 150px; resize: none; }
 
       button {
-        padding: 1rem 1.4rem;
+        padding: 0.9rem 1.2rem;
         border-radius: 999px;
-        border: none;
-        background: linear-gradient(120deg, var(--accent), #f6e7c1);
-        color: #151515;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: #0a0a0a;
+        color: #f7f7f9;
         font-weight: 600;
+        text-transform: uppercase;
         letter-spacing: 0.15em;
         cursor: pointer;
-        transition: transform 180ms ease;
+        transition: transform 0.2s ease, background 0.2s ease;
+        width: 100%;
       }
 
       button:hover {
-        transform: translateY(-3px);
+        transform: translateY(-1px);
+        background: #151515;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
       }
 
       footer {
@@ -198,17 +215,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
   <body>
     <header>
-      <div class="page-shell" style="display: flex; align-items: center; gap: 2rem">
+      <div class="page-shell" style="display: flex; align-items: center; justify-content: space-between; gap: 2rem">
         <div class="brand">
-          <img src="../images/Logo.png" alt="Drip or Drown logo" class="brand-logo" />
-          Drip or Drown
+          <a href="index.html" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: inherit;">
+            <img src="images/Logo-2.png" alt="Drip or Drown logo" class="brand-logo" />
+            Drip or Drown
+          </a>
         </div>
         <nav>
           <a href="index.html">Home</a>
-          <a href="login.html">Login</a>
-          <a href="register.html">Register</a>
-          <a href="cart.html">Cart</a>
-          <a href="contact.php" style="color:#fff;">Contact</a>
+          <a href="collection.html">Shop ▾</a>
+          <a href="AboutUs.html">About</a>
+          <a href="contact.php">Contact</a>
+          <a href="cart.html" class="nav-btn">Cart</a>
+          <a href="login.html" class="nav-btn">Login</a>
         </nav>
       </div>
     </header>
@@ -221,14 +241,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
           <h2>Get in Touch</h2>
           <p>Have a question, issue, or want to reach the team? Send us a message.</p>
 
-          <!-- RESPONSE MESSAGE -->
-          <?php if (!empty($response)): ?>
-            <div style="color:#d6b372; text-align:center; margin-bottom:1rem;">
-              <?= htmlspecialchars($response) ?>
-            </div>
-          <?php endif; ?>
-
-          <form action="contact.php" method="POST">
+          <form action="" method="POST" id="contact-form">
             <input type="text" name="name" placeholder="Your Name" required />
             <input type="email" name="email" placeholder="Your Email" required />
             <textarea name="message" placeholder="Your Message" required></textarea>
@@ -239,5 +252,50 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </main>
 
     <footer>© 2025 Drip or Drown — All Rights Reserved</footer>
+    <script src="app.js"></script>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // We read the PHP status printed into a JS variable
+        const emailStatus = "<?php echo $emailStatus; ?>";
+
+        if (emailStatus === "success") {
+            showPopup("Your message has been sent.<br>We will get back to you soon.");
+        } else if (emailStatus === "error") {
+            showPopup("Server Error: Message could not be sent.");
+        } else if (emailStatus === "validation_error") {
+            showPopup("Please fill in all fields correctly.");
+        }
+
+        function showPopup(message) {
+            const popup = document.createElement('div');
+            popup.id = 'msg-sent-popup';
+            popup.style.cssText = `
+              position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+              background: #0a0a0a; border: 1px solid rgba(255, 255, 255, 0.2);
+              border-radius: 12px; padding: 2rem; z-index: 10000;
+              max-width: 500px; color: #f7f7f9; font-size: 1.1rem;
+              text-align: center; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);`;
+            
+            popup.innerHTML = `
+              <p style='margin-bottom:1.2rem;'>${message}</p>
+              <button id="close-popup" style='background: #1a1a1a; color: #f7f7f9; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 0.75rem 2rem; cursor: pointer; font-weight: 600; width:100%;'>OK</button>`;
+            
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 9999;`;
+            
+            const closeFunc = () => { popup.remove(); overlay.remove(); };
+            overlay.onclick = closeFunc;
+            document.body.appendChild(overlay);
+            document.body.appendChild(popup);
+            document.getElementById('close-popup').onclick = closeFunc;
+            
+            // Clear URL history so refresh doesn't resend
+            if (window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.href);
+            }
+        }
+      });
+    </script>
   </body>
 </html>
