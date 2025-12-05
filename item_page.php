@@ -412,38 +412,40 @@ try {
         <header>
           <div class="page-shell" style="display: flex; align-items: center; gap: 2rem">
             <div class="brand">
-              <img src="Logo.png" alt="Drip or Drown logo" class="brand-logo" />
-              Drip or Drown
+              <a href="index.html" style="display:flex; align-items:center; gap:0.75rem; text-decoration:none; color:inherit;">
+                <img src="images/Logo-2.png" alt="Drip or Drown logo" class="brand-logo" />
+                Drip or Drown
+              </a>
             </div>
             
             <nav>
+                <a href="index.html">Home</a>
                 <div class="dropdown">
-                    <a href="shop.html" class="dropbtn">Shop ▾</a>
+                    <a href="collection.html" class="dropbtn">Shop ▾</a>
                     <div class="dropdown-content">
-                        <a href="shop.html#category-1">GOLD CHAINS</a>
-                        <a href="shop.html#category-2">RINGS</a>
-                        <a href="shop.html#category-3">ANKLETS</a>
-                        <a href="shop.html#category-4">BELLY BUTTON PIERCINGS</a>
-                        <a href="shop.html#category-5">EARRINGS</a>
-                        <a href="shop.html#category-6">BELLY CHAINS</a>
+                        <a href="collection.html#category-1">GOLD CHAINS</a>
+                        <a href="collection.html#category-2">RINGS</a>
+                        <a href="collection.html#category-3">ANKLETS</a>
+                        <a href="collection.html#category-4">BELLY BUTTON PIERCINGS</a>
+                        <a href="collection.html#category-5">EARRINGS</a>
                     </div>
                 </div>
+                <a href="AboutUs.html">About</a>
+                <a href="contact.php">Contact</a>
 
                 <?php if (isset($_SESSION['user_id'])): ?>
-                  <span style="color: var(-accent); font-weight: 500;">
+                  <span style="color: var(--accent); font-weight: 500;">
                     Hi, <?= htmlspecialchars($_SESSION['first_name'] ?? 'User') ?>
                   </span>
+                  <a href="orders.php" class="nav-btn">Orders</a>
                   <a href="logout.php" class="nav-btn">Logout</a>
-
                 <?php else: ?>
                   <a href="login.html" class="nav-btn">Login</a>
                   <a href="register.html" class="nav-btn">Register</a>
                 <?php endif; ?>
 
                 <a href="cart.html" class="nav-btn">Cart</a>
-
             </nav>
-
           </div>
         </header>
 
@@ -474,21 +476,28 @@ try {
               </div>
 
               <div class="purchase-actions">
-                <form action="add_to_cart_function.php" method="POST" style="display:flex; gap:1rem; align-items:center;">
-                    
-                    <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
-                    
+                <form onsubmit="return false;" style="display:flex; gap:1rem; align-items:center;">
                     <div style="display:flex; flex-direction:column;">
                         <label style="font-size:0.7rem; color:var(--muted); margin-left:10px;">Qty</label>
-                        <input type="number" name="quantity" value="1" min="1" max="10" 
-                               style="width: 60px; padding: 0.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: white; text-align: center;">
+                        <input
+                          type="number"
+                          id="item-qty-<?= $product['product_id'] ?>"
+                          value="1"
+                          min="1"
+                          max="10"
+                          style="width: 60px; padding: 0.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: white; text-align: center;"
+                        >
                     </div>
 
-                    <button type="submit" class="primary add-to-cart-btn">Add to Cart</button>
+                    <button
+                      type="button"
+                      class="primary add-to-cart-btn"
+                      onclick="addToCart(<?= (int)$product['product_id'] ?>, document.getElementById('item-qty-<?= $product['product_id'] ?>').value)"
+                    >
+                      Add to Cart
+                    </button>
                 </form>
 
-
-                <button class="secondary buy-now-btn">Buy Now</button>
               </div>
 
               <p id="product-description" class="description">
@@ -519,6 +528,115 @@ try {
           </div>
 
         </main>
-      </body>
+        
+        <script>
+          function addToCart(productId, quantity) {
+            if (!productId) {
+              alert('Invalid product');
+              return;
+            }
+            
+            const qty = quantity && Number(quantity) > 0 ? Number(quantity) : 1;
+            
+            fetch('check_login.php')
+              .then(res => res.json())
+              .then(data => {
+                if (!data.logged_in) {
+                  showErrorPopup("To purchase you need to be logged in or registered. Please go to the login/register page.");
+                  return;
+                }
+                
+                return fetch('add_to_cart_function.php', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                  body: 'product_id=' + encodeURIComponent(productId) + '&quantity=' + encodeURIComponent(qty)
+                });
+              })
+              .then(res => {
+                if (!res) return; 
+                return res.json();
+              })
+              .then(data => {
+                if (!data) return;
+                
+                if (data.error) {
+                  showErrorPopup(data.error || 'An error occurred. Please try again.');
+                } else if (data.ok) {
+                  alert('Item added to cart successfully!');
+                }
+              })
+              .catch(err => {
+                console.error('Error:', err);
+                showErrorPopup('An error occurred. Please try again.');
+              });
+          }
 
+          function showErrorPopup(message) {
+            const existing = document.getElementById('login-error-popup');
+            if (existing) existing.remove();
+
+            const popup = document.createElement('div');
+            popup.id = 'login-error-popup';
+            popup.style.cssText = `
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background: #0a0a0a;
+              border: 1px solid rgba(255, 255, 255, 0.2);
+              border-radius: 12px;
+              padding: 2rem;
+              z-index: 10000;
+              max-width: 500px;
+              box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+            `;
+            
+            const messageEl = document.createElement('p');
+            messageEl.textContent = message;
+            messageEl.style.cssText = `
+              color: #f7f7f9;
+              margin: 0 0 1.5rem 0;
+              font-size: 1rem;
+              line-height: 1.5;
+            `;
+            
+            const button = document.createElement('button');
+            button.textContent = 'OK';
+            button.style.cssText = `
+              background: #1a1a1a;
+              color: #f7f7f9;
+              border: 1px solid rgba(255, 255, 255, 0.2);
+              border-radius: 8px;
+              padding: 0.75rem 2rem;
+              cursor: pointer;
+              font-weight: 600;
+              width: 100%;
+            `;
+            button.onclick = () => {
+              popup.remove();
+              overlay.remove();
+            };
+            
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: rgba(0, 0, 0, 0.7);
+              z-index: 9999;
+            `;
+            overlay.onclick = () => {
+              popup.remove();
+              overlay.remove();
+            };
+            
+            popup.appendChild(messageEl);
+            popup.appendChild(button);
+            document.body.appendChild(overlay);
+            document.body.appendChild(popup);
+          }
+        </script>
+      </body>
     </html>
