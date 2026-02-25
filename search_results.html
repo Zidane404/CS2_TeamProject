@@ -3,80 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Collection | Drip or Drown</title>
+    <title>Search Results | Drip or Drown</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
     <style>
-      .collection-page main {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 120px 2rem 3rem;
-      }
-      .collection-header {
-        text-align: center;
-        margin: 2.5rem 0 2rem;
-      }
-      .category-section {
-        margin-bottom: 4rem;
-      }
-      .category-section h2 {
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: var(--accent);
-      }
-      .product-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 2rem;
-      }
-      .product-card {
-        background: rgba(32, 32, 38, 0.85);
-        border-radius: 22px;
-        overflow: hidden;
-        text-align: center;
-        border: 1px solid rgba(255, 255, 255, 0.04);
-        transition: box-shadow 0.2s;
-      }
-      .product-card:hover {
-        box-shadow: 0 8px 40px rgba(214, 179, 114, 0.19);
-      }
-      .product-card img {
-        width: 100%;
-        height: 260px;
-        object-fit: cover;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-      }
-      .product-title {
-        font-weight: 500;
-        font-size: 1.1rem;
-        margin: 1.1rem 0 0.3rem;
-        color: #fff;
-      }
-      .product-price {
-        color: #1a1a1a;
-        font-weight: 600;
-        font-size: 1rem;
-        margin-bottom: 0.95rem;
-      }
-      .collection-page .site-header .logo {
-        width: 72px;
-        height: 72px;
-      }
-      @media (max-width: 600px) {
-        .collection-header {
-          margin: 2rem 0 1rem;
-        }
-        .product-grid {
-          gap: 1.2rem;
-        }
-        .product-card img {
-          height: 160px;
-        }
-      }
+      .collection-page main { max-width: 1200px; margin: 0 auto; padding: 120px 2rem 3rem; }
+      .collection-header { text-align: center; margin: 2.5rem 0 2rem; }
+      .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+      .product-card { background: rgba(32, 32, 38, 0.85); border-radius: 22px; overflow: hidden; text-align: center; border: 1px solid rgba(255, 255, 255, 0.04); transition: box-shadow 0.2s; }
+      .product-card:hover { box-shadow: 0 8px 40px rgba(214, 179, 114, 0.19); }
+      .product-card img { width: 100%; height: 260px; object-fit: cover; border-bottom: 1px solid rgba(255, 255, 255, 0.03); }
+      .product-title { font-weight: 500; font-size: 1.1rem; margin: 1.1rem 0 0.3rem; color: #fff; }
+      .product-price { color: #1a1a1a; font-weight: 600; font-size: 1rem; margin-bottom: 0.95rem; }
+      .collection-page .site-header .logo { width: 72px; height: 72px; }
     </style>
   </head>
   <body class="collection-page">
@@ -114,15 +55,16 @@
       <div id="welcome-message" style="display: none; color: var(--muted); font-size: 0.9rem; font-weight: 500;"></div>
       <a href="orders.php" id="nav-orders" class="nav-btn" style="display: none; margin-left: 15px; color: white; text-decoration: none;">Orders</a>
     </header>
+    
     <main>
       <section class="collection-header">
-        <h1>Our Collection</h1>
-        <p class="section-title">Discover timeless luxury pieces</p>
+        <h1>Search Results</h1>
+        <p class="section-title" id="search-query-display">Loading...</p>
       </section>
-      <div id="category-sections">
-      </div>
+      
+      <div id="search-results-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;"></div>
     </main>
+
     <script src="app.js"></script>
   </body>
 </html>
-<!-- created by edward oksner -->
