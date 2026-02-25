@@ -3,15 +3,15 @@
 $useLocal = true;
 
 if ($useLocal) {
-    // FOR LOCAL MYSQL TESTING
+    // Local MySQL for Testing
     $db_host = '127.0.0.1';
-    $db_name = 'cs2team8_db04';
+    $db_name = 'cs2team8_db03';
     $db_user = 'root';
     $db_pass = '';
 } else {
-    // FOR LIVE SERVER
+    // Aston server credentials
     $db_host = 'localhost';
-    $db_name = 'cs2team8_db04';
+    $db_name = 'cs2team8_db03';
     $db_user = 'cs2team8';
     $db_pass = 'F3lCvksLmJqDqmsyllNrjsF8R';
 }

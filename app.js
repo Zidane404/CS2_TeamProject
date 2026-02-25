@@ -1,19 +1,15 @@
 
 (function () {
-  // --- Shop / collection: load products and enable "Add to Cart" ---
   const categorySectionsEl = document.getElementById("category-sections");
   const grid = document.querySelector(".product-grid");
 
-  // Check login status
   let isLoggedIn = false;
   let userFirstName = '';
 
-  // Show/hide Login / Register / Logout links based on auth state
 function updateAuthLinks() {
     const loginLink = document.getElementById("nav-login");
     const registerLink = document.getElementById("nav-register");
     const logoutLink = document.getElementById("nav-logout");
-    // 1. Get the orders link
     const ordersLink = document.getElementById("nav-orders");
 
     if (isLoggedIn) {
@@ -21,14 +17,12 @@ function updateAuthLinks() {
       if (loginLink) loginLink.style.display = "none";
       if (logoutLink) logoutLink.style.display = "inline-block";
       
-      // 2. Show orders link when logged in
       if (ordersLink) ordersLink.style.display = "inline-block"; 
     } else {
       if (registerLink) registerLink.style.display = "inline-block";
       if (loginLink) loginLink.style.display = "inline-block";
       if (logoutLink) logoutLink.style.display = "none";
       
-      // 3. Hide orders link when logged out
       if (ordersLink) ordersLink.style.display = "none";
     }
   }
@@ -50,7 +44,6 @@ function updateAuthLinks() {
       });
   }
 
-  // Display welcome message when logged in
   function displayWelcomeMessage() {
     const welcomeEl = document.getElementById('welcome-message');
     if (welcomeEl && isLoggedIn && userFirstName) {
@@ -61,12 +54,9 @@ function updateAuthLinks() {
     }
   }
 
-  // Check login status on page load
   checkLoginStatus();
 
-  // Show error popup
   function showErrorPopup(message) {
-    // Remove existing popup if any
     const existing = document.getElementById('login-error-popup');
     if (existing) existing.remove();
 
@@ -134,7 +124,6 @@ function updateAuthLinks() {
     if (!productId) return;
     const qty = quantity && Number(quantity) > 0 ? Number(quantity) : 1;
     
-    // Check login status first
     checkLoginStatus().then(() => {
       if (!isLoggedIn) {
         showErrorPopup("To purchase you need to be logged in or registered. Please go to the login/register page to do the following.");
@@ -161,8 +150,6 @@ function updateAuthLinks() {
               showErrorPopup(data.error || "An error occurred. Please try again.");
             }
           } else if (data.ok) {
-            // Item added successfully; keep user on the page so they can continue shopping
-            // You could replace this alert with a nicer toast-style message if desired.
             alert("Item added to cart.");
           }
         })
@@ -206,7 +193,6 @@ function updateAuthLinks() {
     return card;
   }
 
-  // Category mapping
   const categoryNames = {
     1: "Chains",
     2: "Rings",
@@ -221,7 +207,6 @@ function updateAuthLinks() {
       .then((data) => {
         if (!data || !Array.isArray(data.items)) return;
         
-        // Group products by category_id
         const grouped = {};
         data.items.forEach((item) => {
           const catId = item.category_id || 0;
@@ -233,7 +218,6 @@ function updateAuthLinks() {
 
         categorySectionsEl.innerHTML = "";
 
-        // Render each category section with anchors for nav
         [1, 2, 3, 4, 5].forEach((catId) => {
           if (!grouped[catId] || grouped[catId].length === 0) return;
 
@@ -257,10 +241,8 @@ function updateAuthLinks() {
         });
       })
       .catch(() => {
-        // fail silently on the front-end
       });
-  } else if (grid) {
-    // Fallback for pages that still use the old .product-grid structure
+  } else if (grid && !document.getElementById("search-results-grid")) {
     fetch("fetch_products.php")
       .then((res) => res.json())
       .then((data) => {
@@ -271,11 +253,9 @@ function updateAuthLinks() {
         });
       })
       .catch(() => {
-        // fail silently on the front-end
       });
   }
 
-  // --- Cart page: load cart for the currently logged in user ---
   const cartItemsEl = document.getElementById("cart-items");
   const subtotalEl = document.getElementById("cart-subtotal");
   const vatEl = document.getElementById("cart-vat");
@@ -334,12 +314,9 @@ function updateAuthLinks() {
         }
       })
       .catch(() => {
-        // fail silently on the front-end
       });
   }
 
-  // Expose addToCart globally so inline onclick handlers (e.g. on item_page.php)
-  // can call it.
   window.addToCart = addToCart;
 
   document.addEventListener('DOMContentLoaded', function() {
@@ -347,7 +324,6 @@ function updateAuthLinks() {
     if (checkoutForm) {
       checkoutForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        // Remove existing popup if any
         var existing = document.getElementById('order-complete-popup');
         if (existing) existing.remove();
         var popup = document.createElement('div');
@@ -374,9 +350,52 @@ function updateAuthLinks() {
         popup.querySelector('button').onclick = function() { popup.remove(); overlay.remove(); window.location.href = 'index.html'; };
         document.body.appendChild(overlay);
         document.body.appendChild(popup);
-        // Optionally clear the form fields:
         checkoutForm.reset();
       });
     }
   });
+
+
+  
+  const searchGrid = document.getElementById("search-results-grid");
+  const searchQueryDisplay = document.getElementById("search-query-display");
+
+  if (searchGrid) {
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get("q");
+
+    if (query) {
+      searchQueryDisplay.textContent = `Showing results for "${query}"`;
+      
+      fetch("fetch_products.php")
+        .then((res) => res.json())
+        .then((data) => {
+          if (!data || !Array.isArray(data.items)) return;
+
+          const lowerQuery = query.toLowerCase();
+          
+          const filteredItems = data.items.filter((item) => {
+            const searchableText = `${item.name} ${item.short_description || ''} ${item.material || ''}`.toLowerCase();
+            return searchableText.includes(lowerQuery);
+          });
+
+          searchGrid.innerHTML = "";
+          
+          if (filteredItems.length === 0) {
+            searchGrid.innerHTML = `<p style="grid-column: 1/-1; color: var(--muted); padding: 2rem 0; text-align: center;">No products found matching "${query}".</p>`;
+          } else {
+            filteredItems.forEach((item) => {
+              searchGrid.appendChild(createProductCard(item));
+            });
+          }
+        })
+        .catch(() => {
+          searchQueryDisplay.textContent = "An error occurred while searching.";
+        });
+    } else {
+      searchQueryDisplay.textContent = "Please enter a search term.";
+    }
+  }
+
+
 })();
