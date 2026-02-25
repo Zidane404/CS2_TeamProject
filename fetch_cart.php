@@ -13,7 +13,6 @@ if (empty($_SESSION['user_id'])) {
 $userId = (int) $_SESSION['user_id'];
 
 try {
-    // Use carts + cart_items + products based on actual schema
     $sql = 'SELECT ci.product_id,
                    ci.quantity,
                    p.name,
@@ -44,4 +43,3 @@ try {
 }
 
 
-// created by ali alsharrad
