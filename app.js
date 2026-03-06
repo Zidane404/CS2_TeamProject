@@ -11,19 +11,22 @@ function updateAuthLinks() {
     const registerLink = document.getElementById("nav-register");
     const logoutLink = document.getElementById("nav-logout");
     const ordersLink = document.getElementById("nav-orders");
+    const accountLink = document.getElementById("nav-account");
 
     if (isLoggedIn) {
       if (registerLink) registerLink.style.display = "none";
       if (loginLink) loginLink.style.display = "none";
       if (logoutLink) logoutLink.style.display = "inline-block";
       
-      if (ordersLink) ordersLink.style.display = "inline-block"; 
+      if (ordersLink) ordersLink.style.display = "inline-block";
+      if (accountLink) accountLink.style.display = "inline-block";
     } else {
       if (registerLink) registerLink.style.display = "inline-block";
       if (loginLink) loginLink.style.display = "inline-block";
       if (logoutLink) logoutLink.style.display = "none";
       
       if (ordersLink) ordersLink.style.display = "none";
+      if (accountLink) accountLink.style.display = "none";
     }
   }
 
