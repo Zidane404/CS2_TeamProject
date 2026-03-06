@@ -398,7 +398,7 @@
       </aside>
     </main>
 
-    <script>
+   <script>
       // Load cart items for order summary
       function loadOrderSummary() {
         fetch('fetch_cart.php')
@@ -543,47 +543,100 @@
         return isValid;
       }
 
-      // Handle form submission
-      document.getElementById('checkout-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (!validateForm()) {
-          return;
-        }
-        // Remove existing popup if any
-        var existing = document.getElementById('order-complete-popup');
-        if (existing) existing.remove();
-        var popup = document.createElement('div');
-        popup.id = 'order-complete-popup';
-        popup.style.cssText = `
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          background: #0a0a0a;
-          border: 1px solid rgba(255,255,255,0.2);
-          border-radius: 12px;
-          padding: 2rem;
-          z-index: 10000;
-          max-width: 500px;
-          color: #f7f7f9;
-          font-size: 1.1rem;
-          text-align: center;
-          box-shadow: 0 8px 32px rgba(0,0,0,0.8);
-        `;
-        popup.innerHTML = `<p style='margin-bottom:1.2rem;'>Your order has been complete.</p><button style='background: #1a1a1a; color:#f7f7f9; border:1px solid rgba(255,255,255,0.2); border-radius:8px; padding:0.75rem 2rem; cursor:pointer; font-weight:600; width:100%;'>OK</button>`;
-        var overlay = document.createElement('div');
-        overlay.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);z-index:9999;`;
-        overlay.onclick = function() { popup.remove(); overlay.remove(); window.location.href = 'index.html'; };
-        popup.querySelector('button').onclick = function() {
-          popup.remove(); overlay.remove(); window.location.href = 'index.html';
-        };
-        document.body.appendChild(overlay);
-        document.body.appendChild(popup);
-        // Optionally clear the form fields:
-        document.getElementById('checkout-form').reset();
-      });
+      // Handle form submission – updated to save order
+document.getElementById('checkout-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
 
-      // Load order summary on page load
+    if (!validateForm()) {
+        return;
+    }
+
+    
+    const submitBtn = document.querySelector('.submit-btn');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Processing...';
+    submitBtn.disabled = true;
+
+    try {
+        const response = await fetch('place_order.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({}) // No need to send form data – we use the cart on server
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            
+            showOrderCompletePopup(result.order_id);
+            
+            this.reset();
+        } else {
+            alert('Error: ' + (result.error || 'Could not place order.'));
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Network error. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+    }
+});
+
+
+function showOrderCompletePopup(orderId) {
+    
+    const existing = document.getElementById('order-complete-popup');
+    if (existing) existing.remove();
+
+    const popup = document.createElement('div');
+    popup.id = 'order-complete-popup';
+    popup.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #0a0a0a;
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 12px;
+        padding: 2rem;
+        z-index: 10000;
+        max-width: 500px;
+        color: #f7f7f9;
+        font-size: 1.1rem;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.8);
+    `;
+
+    popup.innerHTML = `
+        <p style='margin-bottom:1.2rem;'>
+            Your order has been placed!<br>
+            <strong>Order #${orderId}</strong>
+        </p>
+        <button id="close-popup" style='background: #1a1a1a; color:#f7f7f9; border:1px solid rgba(255,255,255,0.2); border-radius:8px; padding:0.75rem 2rem; cursor:pointer; font-weight:600; width:100%;'>View My Orders</button>
+    `;
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);z-index:9999;`;
+
+    overlay.onclick = function() {
+        popup.remove();
+        overlay.remove();
+        window.location.href = 'orders.php';
+    };
+
+    popup.querySelector('#close-popup').onclick = function() {
+        popup.remove();
+        overlay.remove();
+        window.location.href = 'orders.php';
+    };
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(popup);
+}
+
+      
       loadOrderSummary();
     </script>
   </body>

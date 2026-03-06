@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Check if user is logged in
+
 if (empty($_SESSION['user_id'])) {
     header('Location: login.html');
     exit;
@@ -10,9 +10,11 @@ if (empty($_SESSION['user_id'])) {
 require_once 'db_config.php';
 
 $userId = (int) $_SESSION['user_id'];
+$userName = $_SESSION['user_name'] ?? $_SESSION['first_name'] . ' ' . ($_SESSION['last_name'] ?? '');
+$userEmail = $_SESSION['user_email'] ?? '';
 
 try {
-    // Fetch user's orders with details
+    
     $stmt = $pdo->prepare('
         SELECT 
             o.order_id,
@@ -199,6 +201,11 @@ try {
 
       .orders-header {
         margin-bottom: 3rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
       }
 
       .orders-header h1 {
@@ -209,6 +216,21 @@ try {
       .orders-header p {
         color: var(--muted);
         font-size: 1rem;
+      }
+
+      .return-global-btn {
+        background: transparent;
+        border: 1px solid var(--accent);
+        color: var(--accent);
+        padding: 0.6rem 1.5rem;
+        border-radius: 999px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .return-global-btn:hover {
+        background: rgba(214, 179, 114, 0.1);
       }
 
       .orders-list {
@@ -320,6 +342,29 @@ try {
         border: 1px solid rgba(255, 152, 0, 0.3);
       }
 
+      .order-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .return-btn {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #f7f7f9;
+        padding: 0.6rem 1.5rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .return-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
       .view-details-btn {
         display: inline-block;
         padding: 0.6rem 1.5rem;
@@ -375,6 +420,119 @@ try {
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
       }
 
+      
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.8);
+        backdrop-filter: blur(5px);
+      }
+
+      .modal-content {
+        background: linear-gradient(145deg, var(--graphite), var(--deep-black));
+        margin: 5% auto;
+        padding: 2rem;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 24px;
+        width: 90%;
+        max-width: 600px;
+        box-shadow: 0 28px 80px rgba(0,0,0,0.9);
+        color: #f7f7f9;
+      }
+
+      .close {
+        color: var(--muted);
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+
+      .close:hover {
+        color: var(--accent);
+      }
+
+      .modal h2 {
+        margin-bottom: 1.5rem;
+        color: var(--accent);
+      }
+
+      .modal .form-group {
+        margin-bottom: 1.2rem;
+      }
+
+      .modal label {
+        display: block;
+        margin-bottom: 0.3rem;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      .modal input,
+      .modal textarea,
+      .modal select {
+        width: 100%;
+        padding: 0.7rem 1rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(5,5,8,0.9);
+        color: #f7f7f9;
+        font-family: inherit;
+      }
+
+      .modal input:focus,
+      .modal textarea:focus,
+      .modal select:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      .modal button[type="submit"] {
+        background: var(--accent);
+        color: #151515;
+        border: none;
+        padding: 0.9rem 1.6rem;
+        border-radius: 999px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 1rem;
+        transition: transform 0.2s ease;
+      }
+
+      .modal button[type="submit"]:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(214, 179, 114, 0.45);
+      }
+
+      #return-status {
+        margin-top: 1rem;
+        padding: 0.8rem;
+        border-radius: 8px;
+        display: none;
+      }
+
+      .status-success {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
+        border: 1px solid rgba(76, 175, 80, 0.3);
+      }
+
+      .status-error {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+        border: 1px solid rgba(244, 67, 54, 0.3);
+      }
+
       @media (max-width: 720px) {
         header {
           position: static;
@@ -418,7 +576,7 @@ try {
             </div>
           </div>
           <a href="AboutUs.html">About</a>
-          <a href="contact.html">Contact</a>
+          <a href="contact.php">Contact</a>
           <a href="cart.html" class="nav-btn">Cart</a>
           <a href="orders.php" class="nav-btn">Orders</a>
           
@@ -432,8 +590,11 @@ try {
 
     <main class="page-shell orders-container">
       <div class="orders-header">
-        <h1>My Orders</h1>
-        <p>View and track all your orders</p>
+        <div>
+          <h1>My Orders</h1>
+          <p>View and track all your orders</p>
+        </div>
+        <button class="return-global-btn" onclick="openReturnModal()">Request Return</button>
       </div>
 
       <?php if (empty($orders)): ?>
@@ -482,22 +643,134 @@ try {
                 </div>
               </div>
 
-              <button 
-                class="view-details-btn" 
-                onclick="viewOrderDetails(<?= (int)$order['order_id'] ?>)"
-              >
-                View Details
-              </button>
+              <div class="order-actions">
+                <button 
+                  class="view-details-btn" 
+                  onclick="viewOrderDetails(<?= (int)$order['order_id'] ?>)"
+                >
+                  View Details
+                </button>
+                <button 
+                  class="return-btn" 
+                  onclick="openReturnModal(<?= (int)$order['order_id'] ?>, '<?= htmlspecialchars($orderDate) ?>')"
+                >
+                  Request Return
+                </button>
+              </div>
             </div>
           <?php endforeach; ?>
         </div>
       <?php endif; ?>
     </main>
 
+    
+    <div id="returnModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeReturnModal()">&times;</span>
+        <h2>Request a Return</h2>
+        <form id="return-form">
+          <div class="form-group">
+            <label for="return-name">Full Name *</label>
+            <input type="text" id="return-name" name="name" value="<?= htmlspecialchars($userName) ?>" required>
+          </div>
+          <div class="form-group">
+            <label for="return-email">Email *</label>
+            <input type="email" id="return-email" name="email" value="<?= htmlspecialchars($userEmail) ?>" required>
+          </div>
+          <div class="form-group">
+            <label for="return-order">Order Number *</label>
+            <input type="text" id="return-order" name="order_id" required>
+          </div>
+          <div class="form-group">
+            <label for="return-date">Order Date (approx.)</label>
+            <input type="text" id="return-date" name="order_date" placeholder="e.g., December 2025">
+          </div>
+          <div class="form-group">
+            <label for="return-reason">Reason for Return *</label>
+            <select id="return-reason" name="reason" required>
+              <option value="">-- Select a reason --</option>
+              <option value="wrong_item">Wrong item received</option>
+              <option value="defective">Defective / not working</option>
+              <option value="damaged">Damaged in shipping</option>
+              <option value="size_fit">Size / fit issue</option>
+              <option value="changed_mind">Changed my mind</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="return-message">Additional Details</label>
+            <textarea id="return-message" name="message" rows="3" placeholder="Please provide any extra information..."></textarea>
+          </div>
+          <button type="submit">Submit Return Request</button>
+          <div id="return-status"></div>
+        </form>
+      </div>
+    </div>
+
     <script>
+      
+      const modal = document.getElementById('returnModal');
+      const orderInput = document.getElementById('return-order');
+      const dateInput = document.getElementById('return-date');
+
+      function openReturnModal(orderId = '', orderDate = '') {
+        if (orderId) orderInput.value = orderId;
+        if (orderDate) dateInput.value = orderDate;
+        modal.style.display = 'block';
+      }
+
+      function closeReturnModal() {
+        modal.style.display = 'none';
+        
+        document.getElementById('return-form').reset();
+        document.getElementById('return-status').style.display = 'none';
+      }
+
+      
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          closeReturnModal();
+        }
+      }
+
+      
+      document.getElementById('return-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const statusDiv = document.getElementById('return-status');
+        statusDiv.style.display = 'none';
+        statusDiv.className = '';
+
+        const formData = new FormData(this);
+
+        try {
+          const response = await fetch('return_request.php', {
+            method: 'POST',
+            body: formData
+          });
+          const result = await response.json();
+
+          if (response.ok && result.success) {
+            statusDiv.textContent = 'Return request submitted successfully. We will contact you soon.';
+            statusDiv.className = 'status-success';
+            statusDiv.style.display = 'block';
+            this.reset();
+            setTimeout(closeReturnModal, 2000);
+          } else {
+            statusDiv.textContent = result.error || 'An error occurred. Please try again.';
+            statusDiv.className = 'status-error';
+            statusDiv.style.display = 'block';
+          }
+        } catch (err) {
+          statusDiv.textContent = 'Network error. Please try again.';
+          statusDiv.className = 'status-error';
+          statusDiv.style.display = 'block';
+        }
+      });
+
+      
       function viewOrderDetails(orderId) {
         alert('Order details for Order #' + orderId + '\n\nThis feature can be expanded to show order items, shipping info, etc.');
-        
       }
     </script>
   </body>
