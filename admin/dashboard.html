@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Drip or Drown</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            color-scheme: dark;
+            --deep-black: #020203;
+            --onyx: #0b0b0d;
+            --graphite: #111216;
+            --accent: #d6b372;
+            --muted: #868995;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            background: radial-gradient(circle at top, #191a20 0%, var(--deep-black) 45%);
+            color: #f7f7f9;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Admin Header Styles */
+        .admin-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            width: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 0.35rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.75rem 1.4rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(2, 2, 3, 0.6);
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        /* Dashboard Grid Layout */
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+            align-items: start;
+        }
+
+        /* Sidebar Navigation */
+        .admin-sidebar {
+            background: linear-gradient(145deg, var(--graphite), var(--deep-black));
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sidebar-heading {
+            font-size: 0.8rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 1rem;
+            padding-left: 1rem;
+        }
+
+        .admin-nav-item {
+            padding: 0.85rem 1rem;
+            border-radius: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .admin-nav-item:hover,
+        .admin-nav-item.active {
+            background: rgba(214, 179, 114, 0.1);
+            color: var(--accent);
+        }
+
+        /* Main Content Area */
+        .admin-main {
+            background: rgba(11, 11, 13, 0.7);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 2.5rem;
+            min-height: 60vh;
+        }
+
+        #admin-content h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        #admin-content p {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 880px) {
+            .admin-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="admin-header">
+        <a href="#" class="brand">
+            <img src="../images/Logo-2.png" alt="Logo" class="brand-logo" />
+            Admin Portal
+        </a>
+
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <a href="../index.html" class="btn" style="border-color: var(--accent); color: var(--accent);">View as
+                Customer</a>
+
+            <a href="../logout.php" class="btn" style="border-color: #ff6b6b; color: #ff6b6b;">Log Out</a>
+        </div>
+    </header>
+
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="sidebar-heading">Modules</div>
+            <a class="admin-nav-item active" id="nav-overview"
+                onclick="initOverviewModule(); document.querySelectorAll('.admin-nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">Overview</a>
+            <a class="admin-nav-item" id="nav-orders-admin"
+                onclick="initOrderModule(); document.querySelectorAll('.admin-nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">Orders</a>
+            <a class="admin-nav-item" id="nav-customers" onclick="initCustomerModule()">Customers</a>
+            <a class="admin-nav-item" id="nav-inventory-admin"
+                onclick="initInventoryModule(); document.querySelectorAll('.admin-nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">Inventory</a>
+        </aside>
+
+        <main class="admin-main">
+            <div id="admin-content">
+                <h2>Overview</h2>
+                <p>Welcome to the Admin Dashboard. Select a module from the sidebar to manage the store operations.</p>
+            </div>
+        </main>
+    </div>
+    <script src="manage_customers.js"></script>
+    <script src="manage_orders.js"></script>
+    <script src="manage_inventory.js"></script>
+    <script src="dashboard_reports.js"></script>
+    <script>
+        // Initialize Overview on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initOverviewModule();
+        });
+    </script>
+
+</html>
