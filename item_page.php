@@ -513,19 +513,53 @@ try {
             <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">Customer Reviews</h2>
             
             <?php if ($reviewCount > 0): ?>
-                <?php foreach ($reviews as $review): ?>
-                    <div class="review-card" style="margin-bottom: 1.5rem; padding: 1.5rem; border-radius: 12px; background: var(--onyx);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <?php foreach ($reviews as $review): ?>
+                <div class="review-card" style="margin-bottom: 1.5rem; padding: 1.5rem; border-radius: 12px; background: var(--onyx); border: 1px solid rgba(255, 255, 255, 0.04);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                        <div>
                             <p style="font-weight: 600;"><?= htmlspecialchars($review['author']) ?></p>
-                            <span style="color: var(--accent);"><?= str_repeat('★', $review['rating']) ?></span>
+                            <span style="color: var(--accent); font-size: 0.9rem;"><?= str_repeat('★', $review['rating']) ?></span>
                         </div>
-                        <p style="color: var(--muted);"><?= htmlspecialchars($review['body']) ?></p>
+                        
+                        <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $review['user_id']): ?>
+                            <form action="handle_review.php" method="POST" onsubmit="return confirm('Are you sure you want to delete your review?');">
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="review_id" value="<?= $review['review_id'] ?>">
+                                <input type="hidden" name="product_id" value="<?= htmlspecialchars($id) ?>">
+                                <button type="submit" style="background: transparent; color: #ff4d4d; border: 1px solid #ff4d4d; padding: 0.3rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s;">Delete</button>
+                            </form>
+                        <?php endif; ?>
                     </div>
-                <?php endforeach; ?>
+                    <p style="color: var(--muted);"><?= htmlspecialchars($review['body']) ?></p>
+                </div>
+            <?php endforeach; ?>
             <?php else: ?>
                 <p style="color: var(--muted);">No reviews yet for this item.</p>
             <?php endif; ?>
+
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <div style="margin-bottom: 2rem; padding: 1.5rem; background: var(--onyx); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px;">
+                    <h3 style="margin-bottom: 1rem; font-size: 1.2rem;">Leave a Review</h3>
+                    <form action="handle_review.php" method="POST" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <input type="hidden" name="action" value="add">
+                        <input type="hidden" name="product_id" value="<?= htmlspecialchars($id) ?>">
+                        
+                        <label style="color: var(--muted); font-size: 0.9rem;">Rating (1-5):
+                            <input type="number" name="rating" min="1" max="5" value="5" required style="background: transparent; color: white; padding: 0.5rem; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; margin-left: 10px; width: 60px;">
+                        </label>
+                        
+                        <textarea name="body" rows="3" placeholder="What did you think about this item?" required style="background: transparent; color: white; padding: 0.75rem; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; width: 100%; font-family: inherit;"></textarea>
+                        
+                        <button type="submit" style="background: var(--accent); color: var(--deep-black); padding: 0.6rem 1.5rem; border: none; border-radius: 99px; cursor: pointer; font-weight: 600; width: fit-content;">Post Review</button>
+                    </form>
+                </div>
+            <?php else: ?>
+                <p style="color: var(--muted); margin-bottom: 2rem;">Please <a href="login.html" style="color: var(--accent); text-decoration: underline;">log in</a> to leave a review.</p>
+            <?php endif; ?>
+
           </div>
+
+
 
         </main>
         

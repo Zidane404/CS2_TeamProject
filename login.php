@@ -22,7 +22,7 @@ if (empty($email) || empty($password)) {
 
 try {
     $stmt = $pdo->prepare('
-        SELECT user_id, first_name, last_name, email, hashed_password, role
+        SELECT user_id, first_name, last_name, email, hashed_password, role, force_password_reset
         FROM users
         WHERE email = ? AND deleted_at IS NULL
     ');
@@ -45,10 +45,11 @@ try {
     echo json_encode([
         'success' => true,
         'message' => 'Login successful',
-        'user_id' => $user['user_id']
+        'user_id' => $user['user_id'],
+        'user_role' => $user['role'],
+        'force_password_reset' => $user['force_password_reset']
     ]);
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(['error' => 'Login failed']);
 }
-

@@ -5,13 +5,17 @@
 
   let isLoggedIn = false;
   let userFirstName = '';
+  let userRole = ''; // <-- Added variable to track role
 
-function updateAuthLinks() {
+  function updateAuthLinks() {
     const loginLink = document.getElementById("nav-login");
     const registerLink = document.getElementById("nav-register");
     const logoutLink = document.getElementById("nav-logout");
     const ordersLink = document.getElementById("nav-orders");
     const accountLink = document.getElementById("nav-account");
+    const nav = document.querySelector('nav');
+
+    let adminLink = document.getElementById("nav-admin");
 
     if (isLoggedIn) {
       if (registerLink) registerLink.style.display = "none";
@@ -20,13 +24,32 @@ function updateAuthLinks() {
       
       if (ordersLink) ordersLink.style.display = "inline-block";
       if (accountLink) accountLink.style.display = "inline-block";
+
+      // Inject the Admin Link dynamically
+      if (userRole === 'admin') {
+        if (!adminLink && nav && logoutLink) {
+          adminLink = document.createElement('a');
+          adminLink.href = "admin/dashboard.html";
+          adminLink.id = "nav-admin";
+          adminLink.className = "nav-btn";
+          adminLink.style.cssText = "color: var(--accent); border-color: var(--accent); margin-right: 15px;";
+          adminLink.textContent = "Admin Dashboard";
+          // Insert it right before the logout button
+          nav.insertBefore(adminLink, logoutLink);
+        } else if (adminLink) {
+          adminLink.style.display = "inline-block";
+        }
+      } else {
+        if (adminLink) adminLink.style.display = "none";
+      }
+
     } else {
       if (registerLink) registerLink.style.display = "inline-block";
       if (loginLink) loginLink.style.display = "inline-block";
       if (logoutLink) logoutLink.style.display = "none";
-      
       if (ordersLink) ordersLink.style.display = "none";
       if (accountLink) accountLink.style.display = "none";
+      if (adminLink) adminLink.style.display = "none";
     }
   }
 
@@ -36,12 +59,14 @@ function updateAuthLinks() {
       .then((data) => {
         isLoggedIn = data.logged_in || false;
         userFirstName = data.first_name || '';
+        userRole = data.user_role || 'customer'; // <-- Fetch the role
         displayWelcomeMessage();
         updateAuthLinks();
         return data;
       })
       .catch(() => {
         isLoggedIn = false;
+        userRole = '';
         updateAuthLinks();
         return { logged_in: false };
       });
@@ -78,7 +103,7 @@ function updateAuthLinks() {
       max-width: 500px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
     `;
-    
+
     const messageEl = document.createElement('p');
     messageEl.textContent = message;
     messageEl.style.cssText = `
@@ -87,7 +112,7 @@ function updateAuthLinks() {
       font-size: 1rem;
       line-height: 1.5;
     `;
-    
+
     const button = document.createElement('button');
     button.textContent = 'OK';
     button.style.cssText = `
@@ -101,7 +126,7 @@ function updateAuthLinks() {
       width: 100%;
     `;
     button.onclick = () => popup.remove();
-    
+
     const overlay = document.createElement('div');
     overlay.style.cssText = `
       position: fixed;
@@ -116,7 +141,7 @@ function updateAuthLinks() {
       popup.remove();
       overlay.remove();
     };
-    
+
     popup.appendChild(messageEl);
     popup.appendChild(button);
     document.body.appendChild(overlay);
@@ -126,7 +151,7 @@ function updateAuthLinks() {
   function addToCart(productId, quantity) {
     if (!productId) return;
     const qty = quantity && Number(quantity) > 0 ? Number(quantity) : 1;
-    
+
     checkLoginStatus().then(() => {
       if (!isLoggedIn) {
         showErrorPopup("To purchase you need to be logged in or registered. Please go to the login/register page to do the following.");
@@ -209,7 +234,7 @@ function updateAuthLinks() {
       .then((res) => res.json())
       .then((data) => {
         if (!data || !Array.isArray(data.items)) return;
-        
+
         const grouped = {};
         data.items.forEach((item) => {
           const catId = item.category_id || 0;
@@ -322,10 +347,10 @@ function updateAuthLinks() {
 
   window.addToCart = addToCart;
 
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     var checkoutForm = document.getElementById('checkout-form');
     if (checkoutForm) {
-      checkoutForm.addEventListener('submit', function(e) {
+      checkoutForm.addEventListener('submit', function (e) {
         e.preventDefault();
         var existing = document.getElementById('order-complete-popup');
         if (existing) existing.remove();
@@ -349,8 +374,8 @@ function updateAuthLinks() {
         popup.innerHTML = `<p style='margin-bottom:1.2rem;'>Your order has been complete.</p><button style='background: #1a1a1a; color: #f7f7f9; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 0.75rem 2rem; cursor: pointer; font-weight: 600; width:100%;'>OK</button>`;
         var overlay = document.createElement('div');
         overlay.style.cssText = `position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 9999;`;
-        overlay.onclick = function() { popup.remove(); overlay.remove(); window.location.href = 'index.html'; };
-        popup.querySelector('button').onclick = function() { popup.remove(); overlay.remove(); window.location.href = 'index.html'; };
+        overlay.onclick = function () { popup.remove(); overlay.remove(); window.location.href = 'index.html'; };
+        popup.querySelector('button').onclick = function () { popup.remove(); overlay.remove(); window.location.href = 'index.html'; };
         document.body.appendChild(overlay);
         document.body.appendChild(popup);
         checkoutForm.reset();
@@ -359,7 +384,7 @@ function updateAuthLinks() {
   });
 
 
-  
+
   const searchGrid = document.getElementById("search-results-grid");
   const searchQueryDisplay = document.getElementById("search-query-display");
 
@@ -369,21 +394,21 @@ function updateAuthLinks() {
 
     if (query) {
       searchQueryDisplay.textContent = `Showing results for "${query}"`;
-      
+
       fetch("fetch_products.php")
         .then((res) => res.json())
         .then((data) => {
           if (!data || !Array.isArray(data.items)) return;
 
           const lowerQuery = query.toLowerCase();
-          
+
           const filteredItems = data.items.filter((item) => {
             const searchableText = `${item.name} ${item.short_description || ''} ${item.material || ''}`.toLowerCase();
             return searchableText.includes(lowerQuery);
           });
 
           searchGrid.innerHTML = "";
-          
+
           if (filteredItems.length === 0) {
             searchGrid.innerHTML = `<p style="grid-column: 1/-1; color: var(--muted); padding: 2rem 0; text-align: center;">No products found matching "${query}".</p>`;
           } else {
