@@ -1,205 +1,547 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>About Us - Drip or Drown</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --accent: #d6b372; --muted: #aaa; --bg-dark: #0b0b0f; }
-        body { background: var(--bg-dark); color: #f0f0f0; font-family: 'Poppins', sans-serif; line-height: 1.5; }
-        .site-header {
-            display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem;
-            background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(6px); border-bottom: 1px solid rgba(255,255,255,0.03);
-            flex-wrap: wrap;
-        }
-        .brand a { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: inherit; }
-        .logo { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; }
-        .brand-name { font-weight: 600; letter-spacing: 1px; font-size: 1.3rem; }
-        nav { display: flex; align-items: center; gap: 1.8rem; flex-wrap: wrap; }
-        nav a { color: #e0e0e0; text-decoration: none; font-weight: 400; transition: color 0.15s; font-size: 0.95rem; }
-        nav a:hover { color: var(--accent); }
-        .dropdown { position: relative; }
-        .dropdown-content {
-            display: none; position: absolute; background: #1a1a21; min-width: 180px;
-            border-radius: 18px; top: 25px; left: 0; padding: 0.5rem 0; border: 1px solid #2a2a33;
-        }
-        .dropdown-content a { color: #ddd; padding: 0.6rem 1.5rem; display: block; font-size: 0.85rem; }
-        .dropdown-content a:hover { background: #25252e; color: var(--accent); }
-        .dropdown:hover .dropdown-content { display: block; }
-        .nav-btn {
-            background: rgba(214, 179, 114, 0.12); padding: 0.4rem 1.2rem; border-radius: 40px;
-            border: 1px solid rgba(214, 179, 114, 0.2); transition: 0.15s;
-        }
-        .nav-btn:hover { background: rgba(214, 179, 114, 0.25); border-color: var(--accent); color: white; }
-        .page-shell { max-width: 1300px; margin: 0 auto; padding: 2rem 2rem 4rem; }
-        .hero {
-            margin: 1.5rem 0 4rem; border-radius: 52px; overflow: hidden;
-            background: linear-gradient(105deg, #13131a 0%, #1e1e28 100%); padding: 4rem;
-            border: 1px solid rgba(214, 179, 114, 0.15); position: relative;
-        }
-        .hero::after {
-            content: ''; position: absolute; top: -30%; right: -10%; width: 400px; height: 400px;
-            background: radial-gradient(circle, rgba(214, 179, 114, 0.15) 0%, transparent 70%);
-            border-radius: 50%; pointer-events: none;
-        }
-        .hero-content { max-width: 700px; position: relative; z-index: 2; }
-        .hero-content h1 { font-size: 4rem; font-weight: 400; letter-spacing: 2px; margin: 0 0 1rem; }
-        .hero-highlight { color: var(--accent); display: block; font-size: 1.3rem; letter-spacing: 4px; margin-bottom: 0.5rem; }
-        .hero p { font-size: 1.2rem; color: #ccc; max-width: 600px; border-left: 3px solid var(--accent); padding-left: 1.5rem; }
-        .about-grid { display: flex; flex-direction: column; gap: 5rem; }
-        .about-row {
-            display: flex; align-items: center; gap: 3rem; background: rgba(18, 18, 24, 0.5);
-            backdrop-filter: blur(4px); border-radius: 58px; padding: 2rem; border: 1px solid rgba(255,255,255,0.03);
-        }
-        .about-row:nth-child(even) { flex-direction: row-reverse; }
-        .about-media {
-            flex: 1; border-radius: 38px; overflow: hidden; aspect-ratio: 1/1;
-            box-shadow: 0 20px 30px -10px black; border: 1px solid #2d2d35;
-        }
-        .about-media img { width: 100%; height: 100%; object-fit: cover; }
-        .about-text { flex: 1; padding: 1rem 1.5rem; }
-        .about-text .section-title {
-            color: var(--accent); font-size: 1rem; letter-spacing: 4px; text-transform: uppercase;
-            border-bottom: 2px solid var(--accent); padding-bottom: 0.3rem; display: inline-block;
-        }
-        .about-text h3 { font-size: 2.2rem; font-weight: 400; margin: 0.5rem 0 1rem; }
-        .about-text p { color: #b5b5b5; margin-bottom: 1.2rem; font-weight: 300; }
-        .stats { display: flex; gap: 2rem; margin-top: 2rem; }
-        .stat-item {
-            background: rgba(0,0,0,0.4); padding: 0.8rem 1.6rem; border-radius: 60px;
-            border: 1px solid #3d3d4a; color: var(--accent);
-        }
-        .stat-item span { display: block; font-size: 0.8rem; color: #aaa; font-weight: 300; }
-        .testimonial-row { display: flex; gap: 2rem; flex-wrap: wrap; margin: 3rem 0; justify-content: center; }
-        .testimonial-card {
-            background: rgba(22, 22, 30, 0.9); backdrop-filter: blur(5px); border-radius: 42px;
-            padding: 2rem 2rem 2rem 3rem; flex: 1 1 280px; border: 1px solid rgba(214, 179, 114, 0.1);
-            position: relative;
-        }
-        .testimonial-card::before {
-            content: '“'; font-size: 6rem; color: var(--accent); opacity: 0.2;
-            position: absolute; left: 10px; top: -10px;
-        }
-        .testimonial-card p { font-style: italic; color: #ddd; margin-bottom: 1rem; }
-        .testimonial-author { color: var(--accent); font-weight: 500; }
-        .testimonial-author span { color: #777; font-size: 0.8rem; margin-left: 0.5rem; }
-        .features {
-            display: flex; gap: 2rem; justify-content: center; margin-top: 5rem; flex-wrap: wrap;
-        }
-        .feature-card {
-            background: rgba(18, 18, 24, 0.8); backdrop-filter: blur(5px); border-radius: 44px;
-            padding: 2.5rem 2rem; text-align: center; flex: 1 1 200px; border: 1px solid #2f2f3a;
-        }
-        .feature-card h3 { color: var(--accent); font-size: 1.6rem; font-weight: 400; margin: 0 0 0.8rem; }
-        .feature-card p { color: #aaa; font-size: 0.95rem; }
-        @media (max-width: 950px) {
-            .about-row, .about-row:nth-child(even) { flex-direction: column; }
-            .hero-content h1 { font-size: 3rem; }
-            .hero { padding: 3rem 2rem; }
-        }
-        @media (max-width: 600px) {
-            .site-header { flex-direction: column; gap: 0.75rem; }
-            nav { justify-content: center; gap: 0.9rem; }
-            .hero-content h1 { font-size: 2.2rem; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Drip or Drown · The Maison</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32;300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: #030305;
+      color: #ececec;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, h4 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+    }
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 4rem;
+    }
+    @media (max-width: 900px) { .container { padding: 0 2rem; } }
+
+    /* header */
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 4rem;
+      background: rgba(3, 3, 5, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(214, 179, 114, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .brand a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      text-decoration: none;
+      color: white;
+    }
+    .logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 0 1px rgba(214, 179, 114, 0.3);
+    }
+    .brand-name {
+      font-weight: 500;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 2.2rem;
+    }
+    nav a {
+      color: #ddd;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 400;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: #d6b372; }
+    .dropdown { position: relative; }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 30px;
+      left: -10px;
+      background: #121216;
+      min-width: 200px;
+      border-radius: 20px;
+      padding: 0.75rem 0;
+      border: 1px solid #2c2c33;
+      backdrop-filter: blur(8px);
+    }
+    .dropdown-content a {
+      padding: 0.6rem 1.8rem;
+      display: block;
+      color: #bbb;
+      font-size: 0.8rem;
+    }
+    .dropdown-content a:hover { background: #1e1e26; color: #d6b372; }
+    .dropdown:hover .dropdown-content { display: block; }
+    .nav-btn {
+      background: transparent;
+      border: 1px solid rgba(214, 179, 114, 0.3);
+      padding: 0.3rem 1.2rem;
+      border-radius: 40px;
+      transition: 0.15s;
+    }
+    .nav-btn:hover { background: rgba(214, 179, 114, 0.06); border-color: #d6b372; }
+
+    /* hero */
+    .hero {
+      margin: 3rem 0 5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    .hero-text { padding-right: 2rem; }
+    .hero-flag {
+      font-size: 0.75rem;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: #d6b372;
+      border-bottom: 1px solid #d6b372;
+      padding-bottom: 0.4rem;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+    }
+    .hero-text h1 {
+      font-size: 4rem;
+      line-height: 1.1;
+      font-weight: 400;
+      color: #fff;
+      margin-bottom: 1.5rem;
+    }
+    .hero-text h1 .light { font-weight: 300; color: #d6b372; }
+    .hero-para {
+      font-size: 1.1rem;
+      color: #b0b0b8;
+      border-left: 1px solid #d6b372;
+      padding-left: 2rem;
+      margin: 2rem 0 2.5rem;
+      max-width: 500px;
+    }
+    .hero-stat-group {
+      display: flex;
+      gap: 2.5rem;
+    }
+    .hero-stat {
+      font-size: 1.8rem;
+      font-family: 'Playfair Display', serif;
+      color: #fff;
+    }
+    .hero-stat span {
+      display: block;
+      font-size: 0.7rem;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 1px;
+      color: #888;
+    }
+    .hero-image {
+      background: #1a1a22;
+      border-radius: 400px 400px 40px 40px;
+      aspect-ratio: 1 / 1.1;
+      overflow: hidden;
+      border: 1px solid #3a3a48;
+      box-shadow: 0 30px 40px -30px black;
+    }
+    .hero-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(30%);
+    }
+
+    /* story panel */
+    .story-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      margin: 7rem 0;
+      background: #0b0b11;
+      border-radius: 60px;
+      padding: 3rem;
+      border: 1px solid #2d2d39;
+    }
+    .story-panel img {
+      width: 100%;
+      height: 100%;
+      border-radius: 40px;
+      object-fit: cover;
+      aspect-ratio: 4/5;
+      background: #26262e;
+    }
+    .story-panel-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .story-panel-text h2 {
+      font-size: 3rem;
+      font-weight: 400;
+      margin-bottom: 1.5rem;
+      color: #fff;
+    }
+    .story-panel-text p {
+      color: #b5b5c0;
+      font-size: 1rem;
+      margin-bottom: 1.8rem;
+    }
+    .signature-line {
+      width: 80px;
+      height: 2px;
+      background: #d6b372;
+      margin: 1rem 0 1.5rem;
+    }
+
+    /* principles */
+    .philosophy {
+      margin: 8rem 0;
+      text-align: center;
+    }
+    .philosophy h2 {
+      font-size: 2.8rem;
+      margin-bottom: 3rem;
+    }
+    .pillars {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+    }
+    .pillar {
+      background: rgba(18, 18, 26, 0.6);
+      backdrop-filter: blur(4px);
+      border-radius: 80px;
+      padding: 3rem 2rem;
+      flex: 1;
+      border: 1px solid #3b3b4b;
+      transition: all 0.3s;
+    }
+    .pillar:hover { border-color: #d6b37240; background: #15151f; }
+    .pillar h3 {
+      font-size: 2rem;
+      color: #d6b372;
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+    .pillar p { color: #b0b0ba; font-size: 0.95rem; }
+
+    /* gallery */
+    .gallery {
+      margin: 8rem 0;
+    }
+    .gallery h2 {
+      font-size: 2.8rem;
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+    .gallery-item {
+      background: #12121a;
+      border-radius: 40px;
+      overflow: hidden;
+      border: 1px solid #3c3c4a;
+      display: flex;
+      flex-direction: column;
+    }
+    .gallery-item .image-box {
+      aspect-ratio: 1/1;
+      width: 100%;
+      overflow: hidden;
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(40%);
+      transition: 0.4s;
+    }
+    .gallery-item img:hover { filter: grayscale(0%); }
+    .gallery-caption {
+      padding: 1rem 1.2rem 1.5rem;
+      font-size: 0.85rem;
+      color: #ccc;
+      border-top: 1px solid #2d2d3a;
+    }
+    .gallery-caption strong {
+      color: #d6b372;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 0.2rem;
+      font-size: 0.95rem;
+    }
+    .gallery-caption p {
+      font-size: 0.8rem;
+      color: #aaa;
+      line-height: 1.4;
+    }
+
+    /* collective */
+    .collective {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 4rem;
+      margin: 8rem 0;
+      background: #0a0a10;
+      border-radius: 70px;
+      padding: 3rem;
+      border: 1px solid #2f2f3d;
+    }
+    .collective-image {
+      border-radius: 50px;
+      overflow: hidden;
+      aspect-ratio: 1/1.1;
+    }
+    .collective-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .collective-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .collective-text h3 {
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+      color: #fff;
+    }
+    .collective-text .sub {
+      color: #d6b372;
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+    }
+    .collective-text p {
+      font-size: 1rem;
+      color: #ccc;
+      border-left: 2px solid #d6b372;
+      padding-left: 2rem;
+      margin-bottom: 1.2rem;
+    }
+
+    /* testimonials */
+    .testimonials {
+      margin: 8rem 0;
+    }
+    .testimonials h2 {
+      font-size: 2.8rem;
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    .testi-card {
+      background: #0e0e16;
+      padding: 2.5rem 2rem 2rem 3rem;
+      border-radius: 50px;
+      border: 1px solid #2d2d3a;
+      position: relative;
+      transition: 0.2s;
+    }
+    .testi-card:hover { border-color: #d6b37250; }
+    .testi-card::before {
+      content: '“';
+      font-size: 6rem;
+      font-family: 'Playfair Display', serif;
+      color: #d6b372;
+      opacity: 0.2;
+      position: absolute;
+      left: 15px;
+      top: -10px;
+    }
+    .testi-card p { font-style: italic; color: #ddd; margin-bottom: 1.5rem; }
+    .testi-auth { color: #d6b372; font-weight: 400; }
+    .testi-auth span { color: #777; font-size: 0.75rem; margin-left: 0.5rem; }
+
+    /* responsive */
+    @media (max-width: 1000px) {
+      .hero { grid-template-columns: 1fr; }
+      .story-panel { grid-template-columns: 1fr; }
+      .collective { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .testi-grid { grid-template-columns: 1fr; }
+      .pillars { flex-direction: column; }
+      .site-header { padding: 1rem 2rem; }
+      nav { gap: 1.2rem; }
+    }
+    @media (max-width: 600px) {
+      .container { padding: 0 1.5rem; }
+      .hero-text h1 { font-size: 3rem; }
+      .gallery-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-    <header class="site-header">
-        <div class="brand">
-            <a href="index.html">
-                <img src="images/Logo-2.png" alt="Drip or Drown logo" class="logo" />
-                <span class="brand-name">Drip or Drown</span>
-            </a>
+  <header class="site-header">
+    <div class="brand">
+      <a href="index.html">
+        <img src="images/Logo-2.png" alt="Drip or Drown" class="logo" />
+        <span class="brand-name">DRIP OR DROWN</span>
+      </a>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <div class="dropdown">
+        <a href="collection.html">Shop ▾</a>
+        <div class="dropdown-content">
+          <a href="collection.html#category-1">GOLD CHAINS</a>
+          <a href="collection.html#category-2">RINGS</a>
+          <a href="collection.html#category-3">ANKLETS</a>
+          <a href="collection.html#category-4">BELLY PIERCINGS</a>
+          <a href="collection.html#category-5">EARRINGS</a>
         </div>
-        <nav>
-            <a href="index.html">Home</a>
-            <div class="dropdown">
-                <a href="collection.html">Shop ▾</a>
-                <div class="dropdown-content">
-                    <a href="collection.html#category-1">GOLD CHAINS</a>
-                    <a href="collection.html#category-2">RINGS</a>
-                    <a href="collection.html#category-3">ANKLETS</a>
-                    <a href="collection.html#category-4">BELLY BUTTON PIERCINGS</a>
-                    <a href="collection.html#category-5">EARRINGS</a>
-                </div>
-            </div>
-            <a href="AboutUs.html">About</a>
-            <a href="contact.php">Contact</a>
-            <a href="cart.html" class="nav-btn">Cart</a>
-            <a href="login.html" class="nav-btn">Login</a>
-            <a href="register.html" class="nav-btn">Register</a>
-            <a href="logout.php" class="nav-btn">Logout</a>
-        </nav>
-    </header>
+      </div>
+      <a href="AboutUs.html" style="color: #d6b372;">About</a>
+      <a href="contact.php">Contact</a>
+      <a href="cart.html" class="nav-btn">Cart</a>
+      <a href="login.html" class="nav-btn">Login</a>
+      <a href="register.html" class="nav-btn">Register</a>
+      <a href="logout.php" class="nav-btn">Logout</a>
+    </nav>
+  </header>
 
-    <main class="page-shell">
-        <section class="hero">
-            <div class="hero-content">
-                <span class="hero-highlight">since 2001</span>
-                <h1>Our Legacy of Excellence</h1>
-                <p>For over two decades, Drip or Drown has been synonymous with uncompromising quality, ethical sourcing, and timeless design in luxury jewelry.</p>
-                <div style="margin-top: 2.5rem; display: flex; gap: 1.5rem;">
-                    <span class="stat-item">20+ years <span>craftsmanship</span></span>
-                    <span class="stat-item">100% ethical<span>conflict‑free</span></span>
-                </div>
-            </div>
-        </section>
-
-        <div class="about-grid">
-            <div class="about-row">
-                <div class="about-media"><img src="images/image_mining.jpg" alt="Ethical mining"></div>
-                <div class="about-text">
-                    <span class="section-title">Responsible luxury</span>
-                    <h3>Ethically Sourced,<br>Environmentally Conscious</h3>
-                    <p>All our diamonds and gemstones are ethically sourced from conflict‑free regions. Our precious metals are recycled whenever possible.</p>
-                    <div class="stats">
-                        <div>♻️ <strong>100%</strong> <span>recycled gold</span></div>
-                        <div>🔍 <strong>99%</strong> <span>traceable gems</span></div>
-                    </div>
-                </div>
-            </div>
-            <div class="about-row">
-                <div class="about-media"><img src="images/image_manifacturing.jpg" alt="Craftsmanship"></div>
-                <div class="about-text">
-                    <span class="section-title">Heritage & skill</span>
-                    <h3>Master Craftsmanship,<br>Uncompromising Quality</h3>
-                    <p>Our master jewelers combine traditional techniques with innovation. Every detail is meticulously executed to ensure perfection.</p>
-                    <span class="stat-item">30+ artisans<span>in atelier</span></span>
-                </div>
-            </div>
+  <main class="container">
+    <section class="hero">
+      <div class="hero-text">
+        <span class="hero-flag">EST. 2001</span>
+        <h1>Where heritage <span class="light">meets</span> innovation</h1>
+        <p class="hero-para">For over twenty years, our workshop has shaped precious metals and rare stones into luxurious pieces, guided by an uncompromising passion to integrity and beauty.</p>
+        <div class="hero-stat-group">
+          <div class="hero-stat">20+ <span>Years of Mastery</span></div>
+          <div class="hero-stat">100% <span>Ethical gold</span></div>
         </div>
+      </div>
+      <div class="hero-image">
+        <img src="images/diamond__image_aboutus.jpg" alt="Diamond jewelry">
+      </div>
+    </section>
 
-        <section style="margin: 5rem 0 3rem;">
-            <div style="text-align: center; margin-bottom: 3rem;">
-                <span class="section-title" style="border-bottom: none;">CLIENT HEARTS</span>
-                <h2 style="font-size: 2.8rem; font-weight: 400; color: #fff;">Exceptional Experiences</h2>
-            </div>
-            <div class="testimonial-row">
-                <div class="testimonial-card">
-                    <p>"The attention to detail and personalized service is unparalleled. My engagement ring exceeds all expectations."</p>
-                    <div class="testimonial-author">— Sarah M. <span>verified buyer</span></div>
-                </div>
-                <div class="testimonial-card">
-                    <p>"The quality of their gold work is exceptional. I've never seen such brilliant craftsmanship."</p>
-                    <div class="testimonial-author">— James R. <span>collector</span></div>
-                </div>
-                <div class="testimonial-card">
-                    <p>"From ethical sourcing to final polish, you feel the integrity. My go‑to for heirloom pieces."</p>
-                    <div class="testimonial-author">— Elena K. <span>client since 2018</span></div>
-                </div>
-            </div>
-        </section>
+    <!-- workshop -->
+    <section class="story-panel">
+      <img src="images/melted_gold_image_aboutus.jpg" alt="Molten gold">
+      <div class="story-panel-text">
+        <h2>The workshop</h2>
+        <div class="signature-line"></div>
+        <p>A small workshop with a singular focus: create exceptional jewelry without exception.</p>
+        <p>Every piece is crafted by hand. Gold is recycled. Stones are traceable. Trends don't interest us—craftsmanship does.</p>
+        <p>We work slowly, deliberately. The same way it's always been done. Because when you take shortcuts, it shows. And we refuse to let that happen.</p>
+      </div>
+    </section>
 
-        <section class="features">
-            <div class="feature-card"><h3>Heritage</h3><p>Three generations of jewelry expertise.</p></div>
-            <div class="feature-card"><h3>Innovation</h3><p>Timeless techniques with sustainable practices.</p></div>
-            <div class="feature-card"><h3>Integrity</h3><p>Transparent pricing and ethical sourcing.</p></div>
-        </section>
-    </main>
+    <!-- principles -->
+    <section class="philosophy">
+      <h2>Principles that guide us</h2>
+      <div class="pillars">
+        <div class="pillar">
+          <h3>Heritage</h3>
+          <p>Multiple generations of jewelry knowledge, passed down and reimagined for today.</p>
+        </div>
+        <div class="pillar">
+          <h3>Innovation</h3>
+          <p>Modern techniques that allow us to create with less waste and more expression.</p>
+        </div>
+        <div class="pillar">
+          <h3>Integrity</h3>
+          <p>Full traceability, conflict‑free stones, and transparent relationships.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- gallery -->
+    <section class="gallery">
+      <h2>The art of making</h2>
+      <div class="gallery-grid">
+        <div class="gallery-item">
+          <div class="image-box"><img src="images/diamond_setting_image_aboutus.jpg" alt="Gem setting"></div>
+          <div class="gallery-caption">
+            <strong>Precise gem setting</strong>
+            <p>Each stone is placed by hand under magnification, ensuring perfect alignment and security.</p>
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="image-box"><img src="images/image_gold.jpg" alt="Gold smithing"></div>
+          <div class="gallery-caption">
+            <strong>Ancient smithing</strong>
+            <p>Hammering and texturing techniques passed down through generations create unique finishes.</p>
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="image-box"><img src="images/diamond_polish_image.jpg" alt="Polishing"></div>
+          <div class="gallery-caption">
+            <strong>Mirror polish</strong>
+            <p>Multi-stage polishing reveals the deep warmth of ethically sourced gold.</p>
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="image-box"><img src="images/ring_emerald.jpg" alt="Finished ring"></div>
+          <div class="gallery-caption">
+            <strong>Final inspection</strong>
+            <p>Every piece is rigorously checked before it leaves the shop, ensuring unmatched quality.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- vision -->
+    <section class="collective">
+      <div class="collective-image">
+        <img src="images/image_manifacturing.jpg" alt="Artisans at work">
+      </div>
+      <div class="collective-text">
+        <h3>Our vision</h3>
+        <div class="sub">timeless jewelry, ethically made</div>
+        <p> No compromises. Just pieces you will wear for a lifetime, crafted the right way from sourcing the raw materials to delivering your jewelry.</p>
+      </div>
+    </section>
+
+    <!-- review -->
+    <section class="testimonials">
+      <h2>Client hearts</h2>
+      <div class="testi-grid">
+        <div class="testi-card">
+          <p>“The bespoke experience was extraordinary. They listened, sketched, and delivered a ring that feels like it was always meant to be mine.”</p>
+          <div class="testi-auth">— Sarah M. <span>since 2019</span></div>
+        </div>
+        <div class="testi-card">
+          <p>“I own several chains from Drip or Drown, and the quality is unmatched. The gold has a warmth that mass-produced pieces lack.”</p>
+          <div class="testi-auth">— James R. <span>collector</span></div>
+        </div>
+        <div class="testi-card">
+          <p>“Knowing my anniversary gift was crafted with ethically sourced materials makes it even more precious. Thank you for the integrity.”</p>
+          <div class="testi-auth">— Elena K. <span>client since 2018</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div style="border-top: 1px solid rgba(214,179,114,0.1); margin: 3rem 4rem 1rem;"></div>
 </body>
 </html>
