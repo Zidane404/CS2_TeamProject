@@ -399,7 +399,7 @@
     </main>
 
    <script>
-      // Load cart items for order summary
+      
       function loadOrderSummary() {
         fetch('fetch_cart.php')
           .then(res => res.json())
@@ -440,14 +440,14 @@
           });
       }
 
-      // Format card number with spaces
+      
       document.getElementById('card-number').addEventListener('input', function(e) {
         let value = e.target.value.replace(/\s/g, '');
         let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
         e.target.value = formattedValue;
       });
 
-      // Format expiry date with slash
+      
       document.getElementById('expiry').addEventListener('input', function(e) {
         let value = e.target.value.replace(/\D/g, '');
         if (value.length >= 2) {
@@ -456,16 +456,16 @@
         e.target.value = value;
       });
 
-      // Only allow numbers in CVV
+      
       document.getElementById('cvv').addEventListener('input', function(e) {
         e.target.value = e.target.value.replace(/\D/g, '');
       });
 
-      // Form validation
+      
       function validateForm() {
         let isValid = true;
 
-        // Name validation
+        
         const name = document.getElementById('name');
         const nameError = document.getElementById('name-error');
         if (name.value.trim().length < 2) {
@@ -477,7 +477,7 @@
           nameError.style.display = 'none';
         }
 
-        // Email validation
+        
         const email = document.getElementById('email');
         const emailError = document.getElementById('email-error');
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -490,7 +490,7 @@
           emailError.style.display = 'none';
         }
 
-        // Address validation
+        
         const address = document.getElementById('address');
         const addressError = document.getElementById('address-error');
         if (address.value.trim().length < 5) {
@@ -502,7 +502,7 @@
           addressError.style.display = 'none';
         }
 
-        // Card number validation (16 digits)
+        
         const cardNumber = document.getElementById('card-number');
         const cardError = document.getElementById('card-number-error');
         const cardDigits = cardNumber.value.replace(/\s/g, '');
@@ -515,7 +515,7 @@
           cardError.style.display = 'none';
         }
 
-        // Expiry validation (MM/YY format)
+        
         const expiry = document.getElementById('expiry');
         const expiryError = document.getElementById('expiry-error');
         const expiryRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
@@ -528,7 +528,7 @@
           expiryError.style.display = 'none';
         }
 
-        // CVV validation (3 digits)
+        
         const cvv = document.getElementById('cvv');
         const cvvError = document.getElementById('cvv-error');
         if (cvv.value.length !== 3 || !/^\d{3}$/.test(cvv.value)) {
@@ -543,7 +543,7 @@
         return isValid;
       }
 
-      // Handle form submission – updated to save order
+      
 document.getElementById('checkout-form').addEventListener('submit', async function(e) {
     e.preventDefault();
 
@@ -551,7 +551,7 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
         return;
     }
 
-    // Disable button to prevent double submission
+    
     const submitBtn = document.querySelector('.submit-btn');
     const originalText = submitBtn.textContent;
     submitBtn.textContent = 'Processing...';
@@ -567,9 +567,9 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
         const result = await response.json();
 
         if (response.ok && result.success) {
-            // Show success popup with order number
+            
             showOrderCompletePopup(result.order_id);
-            // Clear the form (optional)
+            
             this.reset();
         } else {
             alert('Error: ' + (result.error || 'Could not place order.'));
@@ -584,9 +584,9 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
     }
 });
 
-// New function to show popup with order number and redirect to orders.php
+
 function showOrderCompletePopup(orderId) {
-    // Remove any existing popup
+    
     const existing = document.getElementById('order-complete-popup');
     if (existing) existing.remove();
 
@@ -636,7 +636,7 @@ function showOrderCompletePopup(orderId) {
     document.body.appendChild(popup);
 }
 
-      // Load order summary on page load
+      
       loadOrderSummary();
     </script>
   </body>
