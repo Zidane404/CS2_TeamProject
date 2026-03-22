@@ -8,12 +8,19 @@ try {
     $id = $_GET['id'] ?? 1;
 
     
-    $stmt = $pdo->prepare("SELECT * FROM products WHERE product_id = ?");
+    $stmt = $pdo->prepare("
+        SELECT p.*, i.stock_quantity 
+        FROM products p 
+        LEFT JOIN inventory i ON p.product_id = i.product_id 
+        WHERE p.product_id = ?
+    ");
     $stmt->execute([$id]);
     $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$product) die("Product not found. Check your URL ID.");
 
+    
+    $stock = $product['stock_quantity'] ?? 0;
 
     $stmt = $pdo->prepare("
         SELECT r.*, COALESCE(CONCAT(u.first_name, ' ', u.last_name), 'Guest') as author 
@@ -476,7 +483,18 @@ try {
               </div>
 
               <div class="purchase-actions">
-                <form onsubmit="return false;" style="display:flex; gap:1rem; align-items:center;">
+                <form onsubmit="return false;" style="display:flex; gap:1rem; align-items:center; flex-wrap: wrap;">
+                    
+                    <div style="width: 100%; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 500;">
+                        <?php if ($stock > 10): ?>
+                            <span style="color: #4ade80;">● In Stock</span>
+                        <?php elseif ($stock > 0): ?>
+                            <span style="color: var(--accent);">● Low Stock (only <?= $stock ?> left)</span>
+                        <?php else: ?>
+                            <span style="color: #ff4d4d;">● Out of Stock</span>
+                        <?php endif; ?>
+                    </div>
+
                     <div style="display:flex; flex-direction:column;">
                         <label style="font-size:0.7rem; color:var(--muted); margin-left:10px;">Qty</label>
                         <input
@@ -484,7 +502,8 @@ try {
                           id="item-qty-<?= $product['product_id'] ?>"
                           value="1"
                           min="1"
-                          max="10"
+                          max="<?= ($stock > 0) ? $stock : 1 ?>" 
+                          <?= ($stock <= 0) ? 'disabled' : '' ?>
                           style="width: 60px; padding: 0.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: white; text-align: center;"
                         >
                     </div>
@@ -492,12 +511,12 @@ try {
                     <button
                       type="button"
                       class="primary add-to-cart-btn"
+                      <?= ($stock <= 0) ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : '' ?>
                       onclick="addToCart(<?= (int)$product['product_id'] ?>, document.getElementById('item-qty-<?= $product['product_id'] ?>').value)"
                     >
-                      Add to Cart
+                      <?= ($stock > 0) ? 'Add to Cart' : 'Out of Stock' ?>
                     </button>
                 </form>
-
               </div>
 
               <p id="product-description" class="description">
